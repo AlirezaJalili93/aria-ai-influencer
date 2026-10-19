@@ -49,6 +49,7 @@ import urllib.parse
 import urllib.request
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
+from zoneinfo import ZoneInfo
 
 import cv2
 import numpy as np
@@ -1364,6 +1365,10 @@ class InstagramAgentOrchestrator:
         published_count = 0
         for item in due_items:
             schedule_id = item["id"]
+            with self.db._connect() as conn:
+                claimed = conn.execute("UPDATE scheduled_media SET status = 'PROCESSING' WHERE id = ? AND status = 'PENDING'", (schedule_id,)).rowcount
+            if not claimed:
+                continue
             kind = item["kind"]
             media_url = item["media_url"]
             caption = item["caption"]
@@ -1446,20 +1451,32 @@ class InstagramAgentOrchestrator:
         orchestrator_ref = self
 
         class AgentHTTPHandler(http.server.BaseHTTPRequestHandler):
+            def _allow_admin_request(self) -> bool:
+                host = self.headers.get("Host", "")
+                try:
+                    hostname = urllib.parse.urlsplit("http://" + host).hostname
+                except ValueError:
+                    hostname = None
+                origin = self.headers.get("Origin")
+                if hostname not in ("localhost", "127.0.0.1", "::1") or (origin and origin not in ("http://" + host, "https://" + host)):
+                    self._send_json(403, {"error": "Use the local dashboard through an SSH tunnel"})
+                    return False
+                return True
+
             def _send_json(self, status_code: int, payload: Dict[str, Any]) -> None:
                 body = json.dumps(payload, ensure_ascii=False, indent=2).encode("utf-8")
                 self.send_response(status_code)
                 self.send_header("Content-Type", "application/json; charset=utf-8")
-                self.send_header("Access-Control-Allow-Origin", "*")
-                self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
-                self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization")
+                self.send_header("Cache-Control", "no-store")
+                self.send_header("X-Content-Type-Options", "nosniff")
                 self.send_header("Content-Length", str(len(body)))
                 self.end_headers()
                 self.wfile.write(body)
 
             def do_OPTIONS(self) -> None:
+                if not self._allow_admin_request():
+                    return
                 self.send_response(204)
-                self.send_header("Access-Control-Allow-Origin", "*")
                 self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
                 self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization")
                 self.end_headers()
@@ -1467,6 +1484,29 @@ class InstagramAgentOrchestrator:
             def do_GET(self) -> None:
                 parsed = urllib.parse.urlparse(self.path)
                 query = urllib.parse.parse_qs(parsed.query)
+
+                if parsed.path != "/webhook" and not self._allow_admin_request():
+                    return
+
+                if parsed.path in ("/", "/dashboard", "/dashboard/"):
+                    root = Path(__file__).resolve().parent
+                    if root.name == "src":
+                        root = root.parent
+                    try:
+                        body = (root / "web" / "dashboard.html").read_bytes()
+                    except OSError:
+                        self._send_json(503, {"error": "Dashboard file unavailable; rerun the installer"})
+                        return
+                    self.send_response(200)
+                    self.send_header("Content-Type", "text/html; charset=utf-8")
+                    self.send_header("Content-Length", str(len(body)))
+                    self.send_header("Cache-Control", "no-store")
+                    self.send_header("X-Content-Type-Options", "nosniff")
+                    self.send_header("Referrer-Policy", "no-referrer")
+                    self.send_header("Content-Security-Policy", "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'")
+                    self.end_headers()
+                    self.wfile.write(body)
+                    return
 
                 if parsed.path == "/webhook":
                     mode = query.get("hub.mode", [""])[0]
@@ -1484,7 +1524,7 @@ class InstagramAgentOrchestrator:
                         self._send_json(403, {"error": "Invalid webhook verify_token"})
                     return
 
-                if parsed.path in ("/", "/health", "/api/status"):
+                if parsed.path in ("/health", "/api/status"):
                     saved_ig = orchestrator_ref.db.get_instagram_account()
                     self._send_json(
                         200,
@@ -1492,6 +1532,9 @@ class InstagramAgentOrchestrator:
                             "status": "ONLINE",
                             "agent": "آریا (Aria) — اولین اینفلوئنسر هوش مصنوعی ایران",
                             "webhook_endpoint": "/webhook",
+                            "webhook_signature_configured": bool(orchestrator_ref.config.meta_app_secret),
+                            "webhook_verify_token": orchestrator_ref.config.webhook_verify_token if parsed.path == "/api/status" else None,
+                            "timezone": "Asia/Tehran",
                             "instagram_connected": bool(orchestrator_ref.config.ig_access_token and orchestrator_ref.config.ig_user_id),
                             "instagram_account": {
                                 "ig_user_id": orchestrator_ref.config.ig_user_id,
@@ -1512,6 +1555,8 @@ class InstagramAgentOrchestrator:
 
             def do_POST(self) -> None:
                 parsed = urllib.parse.urlparse(self.path)
+                if parsed.path != "/webhook" and not self._allow_admin_request():
+                    return
                 try:
                     length = int(self.headers.get("Content-Length", "0"))
                 except ValueError:
@@ -1571,6 +1616,12 @@ class InstagramAgentOrchestrator:
 
                 if parsed.path == "/api/add-key":
                     try:
+                        if payload.get("provider") not in PROVIDER_DEFAULTS:
+                            raise ValueError("Unknown AI provider")
+                        if not str(payload.get("alias", "")).strip() or not str(payload.get("api_key", "")).strip():
+                            raise ValueError("Alias and API key are required")
+                        if int(payload.get("daily_limit", 500000)) <= 0:
+                            raise ValueError("Daily token limit must be positive")
                         orchestrator_ref.db.upsert_api_key(
                             provider=str(payload["provider"]),
                             key_alias=str(payload["alias"]),
@@ -1584,6 +1635,44 @@ class InstagramAgentOrchestrator:
                         self._send_json(200, {"ok": True, "token_report": orchestrator_ref.db.get_token_usage_report()})
                     except Exception as exc:
                         self._send_json(400, {"ok": False, "error": str(exc)})
+                    return
+
+                if parsed.path == "/api/schedule-media":
+                    try:
+                        kind = str(payload.get("kind", ""))
+                        if kind not in ("STORY_IMAGE", "STORY_VIDEO", "REEL"):
+                            raise ValueError("Unsupported media kind")
+                        media_url = str(payload.get("media_url", "")).strip()
+                        media = urllib.parse.urlsplit(media_url)
+                        if media.scheme != "https" or not media.hostname or media.username or media.password:
+                            raise ValueError("A public HTTPS media URL is required")
+                        publish_at = dt.datetime.fromisoformat(str(payload.get("publish_at", "")).replace("Z", "+00:00"))
+                        tehran = ZoneInfo("Asia/Tehran")
+                        if publish_at.tzinfo is None and payload.get("timezone") == "Asia/Tehran":
+                            publish_at = publish_at.replace(tzinfo=tehran)
+                        if publish_at.tzinfo is None:
+                            raise ValueError("Publication time must include a UTC offset")
+                        if publish_at <= dt.datetime.now(dt.timezone.utc):
+                            raise ValueError("Publication time must be in the future")
+                        publish_local = publish_at.astimezone(tehran).replace(tzinfo=None).isoformat(timespec="seconds")
+                        row_id = orchestrator_ref.db.add_scheduled_media(kind, media_url, publish_local, str(payload.get("caption", "")))
+                        self._send_json(200, {"ok": True, "schedule_id": row_id, "publish_at": publish_local, "timezone": "Asia/Tehran"})
+                    except (ValueError, TypeError) as exc:
+                        self._send_json(400, {"ok": False, "error": str(exc)})
+                    return
+
+                if parsed.path == "/api/cancel-schedule":
+                    try:
+                        row_id = int(payload.get("schedule_id", 0))
+                        with orchestrator_ref.db._connect() as conn:
+                            cur = conn.execute("UPDATE scheduled_media SET status = 'CANCELLED' WHERE id = ? AND status = 'PENDING'", (row_id,))
+                            changed = cur.rowcount
+                        if not changed:
+                            self._send_json(409, {"ok": False, "error": "Schedule is missing or is no longer pending"})
+                        else:
+                            self._send_json(200, {"ok": True})
+                    except (ValueError, TypeError):
+                        self._send_json(400, {"ok": False, "error": "Invalid schedule ID"})
                     return
 
                 if parsed.path == "/api/test-reply":

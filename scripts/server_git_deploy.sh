@@ -55,6 +55,8 @@ cd "$APP_DIR"
 # traverse the app directory and read this entrypoint; secrets stay private.
 chmod 0755 "$APP_DIR"
 chmod 0644 "$APP_DIR/instagram_ai_agent.py"
+chmod 0755 "$APP_DIR/web"
+chmod 0644 "$APP_DIR/web/dashboard.html"
 python3 -m venv .venv
 .venv/bin/python -m pip install -r requirements.txt
 .venv/bin/python -c 'import cv2, numpy, PIL'
