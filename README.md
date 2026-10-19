@@ -96,3 +96,9 @@ git clone https://github.com/YOUR_USERNAME/aria-ai-influencer.git /opt/aria-ai-i
 - `SERVER_PASSWORD`: رمز عبور سرور شما (یا `SERVER_SSH_KEY`)
 
 از این پس هر بار که روی سیستم خود کد را تغییر دهید و `git push` بزنید، گیت‌هاب به صورت خودکار وارد سرور `195.248.241.48` می‌شود، دستور `git pull` را اجرا می‌کند و سرویس ۲۴/۷ آریا را بدون یک ثانیه قطعی آپدیت و ری‌استارت می‌کند!
+
+## استودیوی مرجع Gemini و هویت آریا
+
+داشبورد چهار‌تب مرجع با گالری اصلی، تست کامنت/دایرکت، مدیریت کلیدها و نمودار توکن، سناریوساز، موشن زنده ۹:۱۶، خروجی PNG/MP4 و صف انتشار به بک‌اند وصل شده است. شخصیت از `character/aria.json` خوانده می‌شود. اسکیل فارسی در `.agents/skills/persian-rtl-vazirmatn/SKILL.md` و فونت محلی در `assets/fonts/` است.
+
+[فهرست کامل انتقال و محدودیت‌ها](docs/restoration_inventory.md) · [بایگانی مرجع](docs/reference/README.md) · [به‌روزرسانی سرور با بک‌آپ](docs/server_deployment.md)

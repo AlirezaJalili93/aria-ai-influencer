@@ -40,6 +40,7 @@ import os
 import http.server
 import hashlib
 import hmac
+import mimetypes
 import sqlite3
 import sys
 import threading
@@ -54,6 +55,13 @@ from zoneinfo import ZoneInfo
 import cv2
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont
+
+# Both supported entrypoints resolve the same project resources.
+PROJECT_ROOT = Path(__file__).resolve().parent
+if PROJECT_ROOT.name == "src":
+    PROJECT_ROOT = PROJECT_ROOT.parent
+    sys.path.insert(0, str(PROJECT_ROOT))
+from aria_studio import StudioRuntime, read_profile
 
 # Ensure UTF-8 stdout/stderr across all platforms
 if hasattr(sys.stdout, "reconfigure"):
@@ -98,6 +106,10 @@ PERSONA_SYSTEM_PROMPT = """
    - پاسخ‌ها کوتاه (۱ تا ۳ جمله)، صمیمی، خلاقانه و همراه با یک سوال یا شوخی مرتبط باشد تا مکالمه ادامه پیدا کند.
    - هرگز اطلاعات حساس، سیاسی، پزشکی یا مالی قطعی نده و در برابر پیام‌های نامناسب یا اسپم با شوخ‌طبعی محترمانه رد شو.
 """.strip()
+
+CHARACTER_PROFILE = read_profile()
+OFFICIAL_INSTAGRAM_BIO = CHARACTER_PROFILE["official_bio"]
+PERSONA_SYSTEM_PROMPT = CHARACTER_PROFILE["system_prompt"]
 
 
 # Default provider endpoints and default models
@@ -378,6 +390,14 @@ class StateDatabase:
             env_val = os.getenv(meta["env_key"], "").strip()
             if env_val:
                 alias = f"{provider}_env"
+                with self._connect() as conn:
+                    saved = conn.execute("SELECT * FROM api_keys_vault WHERE key_alias=?", (alias,)).fetchone()
+                if saved:
+                    # Keep dashboard budgets, models and pause state across restarts.
+                    with self._connect() as conn:
+                        conn.execute("UPDATE api_keys_vault SET api_key=? WHERE key_alias=?", (env_val, alias))
+                    priority_counter += 10
+                    continue
                 self.upsert_api_key(
                     provider=provider,
                     key_alias=alias,
@@ -484,6 +504,7 @@ class StateDatabase:
                     {
                         "key_alias": r["key_alias"],
                         "provider": r["provider"],
+                        "priority": r["priority"],
                         "masked_key": masked,
                         "base_url": r["base_url"],
                         "scenario_model": r["scenario_model"],
@@ -732,12 +753,13 @@ class MultiAIRouter:
         task_type: str = "GENERAL",
         use_scenario_model: bool = False,
         json_mode: bool = False,
+        preferred_provider: Optional[str] = None,
     ) -> Tuple[str, Dict[str, Any]]:
         """
         Routes the generation request across available API keys with automatic token budget checking
         and provider failover. Returns `(response_text, metadata_dict)`.
         """
-        candidates = self.db.get_candidate_keys(preferred_provider=self.config.preferred_provider)
+        candidates = self.db.get_candidate_keys(preferred_provider=preferred_provider or self.config.preferred_provider)
         if not candidates:
             raise RuntimeError(
                 "هیچ کلید API فعالی با سقف توکن روزانه باقی‌مانده یافت نشد! "
@@ -818,7 +840,7 @@ class AIInfluencerBrain:
         self.config = config
         self.router = router
 
-    def generate_daily_content_pack(self, topic: str) -> Dict[str, Any]:
+    def generate_daily_content_pack(self, topic: str, preferred_provider: Optional[str] = None) -> Dict[str, Any]:
         """Generates a complete daily content pack using the flagship scenario model."""
         prompt = f"""
 بر اساس موضوع «{topic}»، یک پکیج کامل محتوای روزانه اینستاگرام با فرمت JSON دقیق زیر (کاملاً UTF-8 و راست‌به‌چپ) تولید کن:
@@ -866,6 +888,7 @@ class AIInfluencerBrain:
             task_type="SCENARIO_PACK",
             use_scenario_model=True,
             json_mode=True,
+            preferred_provider=preferred_provider,
         )
         cleaned = raw_json.strip()
         if cleaned.startswith("```"):
@@ -879,6 +902,7 @@ class AIInfluencerBrain:
         incoming_text: str,
         user_handle: str,
         kind: str = "COMMENT",
+        preferred_provider: Optional[str] = None,
     ) -> Tuple[str, Dict[str, Any]]:
         """Generates a witty, friendly, futuristic Persian reply using the fast/economical model."""
         kind_fa = "کامنت زیر پست" if kind == "COMMENT" else "پیام دایرکت (در پاسخ به بیوی «چه کاری رو برات هوشمند کنم؟»)"
@@ -896,6 +920,7 @@ class AIInfluencerBrain:
             task_type=task_label,
             use_scenario_model=False,
             json_mode=False,
+            preferred_provider=preferred_provider,
         )
         return text.strip(), meta
 
@@ -946,6 +971,7 @@ class StoryMediaGenerator:
 
         weight = "Bold" if bold else "Regular"
         vazir_candidates = [
+            str(PROJECT_ROOT / "assets" / "fonts" / f"Vazirmatn-{weight}.ttf"),
             f"Vazirmatn-{weight}.ttf",
             "Vazirmatn.ttf",
             f"/usr/share/fonts/truetype/vazirmatn/Vazirmatn-{weight}.ttf",
@@ -1029,6 +1055,8 @@ class StoryMediaGenerator:
         fourcc = cv2.VideoWriter_fourcc(*"mp4v")
         Path(output_mp4_path).parent.mkdir(parents=True, exist_ok=True)
         writer = cv2.VideoWriter(output_mp4_path, fourcc, fps, (cls.WIDTH, cls.HEIGHT))
+        if not writer.isOpened():
+            raise RuntimeError("MP4 encoder is unavailable")
 
         bg_base: Optional[np.ndarray] = None
         if background_image_path and os.path.exists(background_image_path):
@@ -1359,6 +1387,7 @@ class InstagramAgentOrchestrator:
         self.router = MultiAIRouter(config, self.db)
         self.brain = AIInfluencerBrain(config, self.router)
         self.ig = InstagramGraphClient(config)
+        self.studio = StudioRuntime(self, StoryMediaGenerator)
 
     def process_due_schedules(self) -> int:
         due_items = self.db.get_due_scheduled_media()
@@ -1488,6 +1517,36 @@ class InstagramAgentOrchestrator:
                 if parsed.path != "/webhook" and not self._allow_admin_request():
                     return
 
+                if parsed.path == "/api/studio":
+                    self._send_json(200, orchestrator_ref.studio.state())
+                    return
+
+                if parsed.path.startswith(("/assets/", "/media/")) or parsed.path == "/dashboard.js":
+                    if parsed.path == "/dashboard.js":
+                        resource = PROJECT_ROOT / "web/dashboard.js"
+                    else:
+                        base = PROJECT_ROOT / "assets" if parsed.path.startswith("/assets/") else orchestrator_ref.studio.media_dir
+                        relative = urllib.parse.unquote(parsed.path.split("/", 2)[2])
+                        resource = (base / relative).resolve()
+                        if base.resolve() not in resource.parents:
+                            self._send_json(403, {"error": "Invalid resource path"})
+                            return
+                    if not resource.is_file():
+                        self._send_json(404, {"error": "Resource not found"})
+                        return
+                    self.send_response(200)
+                    self.send_header("Content-Type", mimetypes.guess_type(str(resource))[0] or "application/octet-stream")
+                    self.send_header("Content-Length", str(resource.stat().st_size))
+                    self.send_header("X-Content-Type-Options", "nosniff")
+                    self.send_header("Cache-Control", "no-store")
+                    self.end_headers()
+                    with resource.open("rb") as stream:
+                        while True:
+                            block = stream.read(64 * 1024)
+                            if not block: break
+                            self.wfile.write(block)
+                    return
+
                 if parsed.path in ("/", "/dashboard", "/dashboard/"):
                     root = Path(__file__).resolve().parent
                     if root.name == "src":
@@ -1503,7 +1562,7 @@ class InstagramAgentOrchestrator:
                     self.send_header("Cache-Control", "no-store")
                     self.send_header("X-Content-Type-Options", "nosniff")
                     self.send_header("Referrer-Policy", "no-referrer")
-                    self.send_header("Content-Security-Policy", "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'")
+                    self.send_header("Content-Security-Policy", "default-src 'self'; img-src 'self' data: blob:; media-src 'self' blob:; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; connect-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'")
                     self.end_headers()
                     self.wfile.write(body)
                     return
@@ -1562,7 +1621,7 @@ class InstagramAgentOrchestrator:
                 except ValueError:
                     self._send_json(400, {"error": "Invalid Content-Length"})
                     return
-                if length < 0 or length > 1024 * 1024:
+                if length < 0 or length > (8 * 1024 * 1024 if parsed.path == "/api/save-draft" else 1024 * 1024):
                     self._send_json(413, {"error": "Request body too large"})
                     return
                 body_bytes = self.rfile.read(length)
@@ -1591,6 +1650,15 @@ class InstagramAgentOrchestrator:
                         daemon=True,
                     ).start()
                     self._send_json(200, {"status": "EVENT_RECEIVED"})
+                    return
+
+                try:
+                    studio_response = orchestrator_ref.studio.handle_post(parsed.path, payload)
+                    if studio_response is not None:
+                        self._send_json(*studio_response)
+                        return
+                except Exception as exc:
+                    self._send_json(400, {"ok": False, "error": str(exc)})
                     return
 
                 if parsed.path == "/api/connect-instagram":
@@ -1681,6 +1749,7 @@ class InstagramAgentOrchestrator:
                             incoming_text=str(payload.get("text", "سلام آریا!")),
                             user_handle=str(payload.get("username", "user_test")),
                             kind=str(payload.get("kind", "DM")),
+                            preferred_provider=str(payload.get("provider", "auto")),
                         )
                         self._send_json(200, {"ok": True, "reply": reply_text, "meta": meta})
                     except Exception as exc:
@@ -1690,8 +1759,8 @@ class InstagramAgentOrchestrator:
                 if parsed.path == "/api/generate-daily":
                     try:
                         topic = str(payload.get("topic", "۲۴ ساعت زندگی من به عنوان هوش مصنوعی در تهران"))
-                        pack = orchestrator_ref.brain.generate_daily_content_pack(topic)
-                        self._send_json(200, {"ok": True, "pack": pack})
+                        pack, pack_id = orchestrator_ref.studio.save_pack(topic, str(payload.get("provider", "auto")))
+                        self._send_json(200, {"ok": True, "pack": pack, "pack_id": pack_id})
                     except Exception as exc:
                         self._send_json(400, {"ok": False, "error": str(exc)})
                     return
@@ -1719,6 +1788,7 @@ class InstagramAgentOrchestrator:
         )
         while True:
             try:
+                self.studio.daily_tick()
                 if self.config.ig_access_token and self.config.ig_user_id:
                     self.process_due_schedules()
                     self.process_new_comments()

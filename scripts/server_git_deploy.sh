@@ -55,8 +55,12 @@ cd "$APP_DIR"
 # traverse the app directory and read this entrypoint; secrets stay private.
 chmod 0755 "$APP_DIR"
 chmod 0644 "$APP_DIR/instagram_ai_agent.py"
-chmod 0755 "$APP_DIR/web"
-chmod 0644 "$APP_DIR/web/dashboard.html"
+chmod 0644 "$APP_DIR/aria_studio.py"
+# Only public source/resource directories; do not broaden .env/data permissions.
+for aria_resource_dir in web assets character .agents docs src; do
+  find "$APP_DIR/$aria_resource_dir" -type d -exec chmod 0755 {} +
+  find "$APP_DIR/$aria_resource_dir" -type f -exec chmod 0644 {} +
+done
 python3 -m venv .venv
 .venv/bin/python -m pip install -r requirements.txt
 .venv/bin/python -c 'import cv2, numpy, PIL'
@@ -120,6 +124,7 @@ if [[ -f /etc/systemd/system/$SERVICE_NAME.service ]]; then
 fi
 install -m 644 systemd/aria-instagram-agent.service "/etc/systemd/system/$SERVICE_NAME.service"
 runuser -u aria-agent -- "$APP_DIR/.venv/bin/python" "$APP_DIR/instagram_ai_agent.py" --help >/dev/null
+runuser -u aria-agent -- "$APP_DIR/.venv/bin/python" -c 'from PIL import features; assert features.check("raqm"), "Pillow RAQM is required for Persian rendering"'
 systemctl daemon-reload
 systemctl enable "$SERVICE_NAME"
 systemctl restart "$SERVICE_NAME"
