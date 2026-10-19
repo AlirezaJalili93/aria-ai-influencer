@@ -38,6 +38,8 @@ import logging
 import math
 import os
 import http.server
+import hashlib
+import hmac
 import sqlite3
 import sys
 import threading
@@ -150,10 +152,12 @@ class AgentConfig:
     ig_access_token: str = os.getenv("IG_ACCESS_TOKEN", "")
     ig_user_id: str = os.getenv("IG_USER_ID", "")
     ig_graph_version: str = os.getenv("IG_GRAPH_VERSION", "v21.0")
-    webhook_verify_token: str = os.getenv("IG_WEBHOOK_VERIFY_TOKEN", "iran_first_ai_influencer_secret")
-    db_path: str = os.getenv("AGENT_DB_PATH", "/tmp/instagram_agent_state.db")
+    webhook_verify_token: str = os.getenv("IG_WEBHOOK_VERIFY_TOKEN", "")
+    db_path: str = os.getenv("AGENT_DB_PATH", str(Path(__file__).resolve().parent / "data" / "instagram_agent_state.db"))
     poll_interval_seconds: int = int(os.getenv("AGENT_POLL_INTERVAL", "120"))
     webhook_port: int = int(os.getenv("AGENT_WEBHOOK_PORT", "8080"))
+    webhook_host: str = os.getenv("AGENT_WEBHOOK_HOST", "127.0.0.1")
+    meta_app_secret: str = os.getenv("META_APP_SECRET", "")
 
     @property
     def graph_base_url(self) -> str:
@@ -176,15 +180,12 @@ class StateDatabase:
 
     def __init__(self, db_path: str) -> None:
         self.db_path = db_path
+        Path(db_path).resolve().parent.mkdir(parents=True, exist_ok=True)
         self._init_db()
 
     def _connect(self) -> sqlite3.Connection:
-        try:
-            conn = sqlite3.connect(self.db_path)
-            conn.execute("PRAGMA journal_mode=MEMORY;")
-        except sqlite3.OperationalError:
-            self.db_path = "/tmp/instagram_agent_state.db"
-            conn = sqlite3.connect(self.db_path)
+        conn = sqlite3.connect(self.db_path, timeout=30)
+        conn.execute("PRAGMA journal_mode=WAL;")
         conn.row_factory = sqlite3.Row
         return conn
 
@@ -1346,7 +1347,7 @@ class InstagramAgentOrchestrator:
                 self.config.ig_access_token = saved_ig.get("access_token", "")
             if not self.config.ig_user_id:
                 self.config.ig_user_id = saved_ig.get("ig_user_id", "")
-            if saved_ig.get("webhook_verify_token"):
+            if not self.config.webhook_verify_token and saved_ig.get("webhook_verify_token"):
                 self.config.webhook_verify_token = saved_ig["webhook_verify_token"]
         elif self.config.ig_access_token and self.config.ig_user_id:
             self.db.save_instagram_account(
@@ -1471,7 +1472,7 @@ class InstagramAgentOrchestrator:
                     mode = query.get("hub.mode", [""])[0]
                     verify_token = query.get("hub.verify_token", [""])[0]
                     challenge = query.get("hub.challenge", [""])[0]
-                    if mode == "subscribe" and verify_token == orchestrator_ref.config.webhook_verify_token:
+                    if mode == "subscribe" and orchestrator_ref.config.webhook_verify_token and verify_token == orchestrator_ref.config.webhook_verify_token:
                         logger.info("Meta Instagram Webhook verified successfully!")
                         resp_bytes = challenge.encode("utf-8")
                         self.send_response(200)
@@ -1511,12 +1512,32 @@ class InstagramAgentOrchestrator:
 
             def do_POST(self) -> None:
                 parsed = urllib.parse.urlparse(self.path)
-                length = int(self.headers.get("Content-Length", "0"))
-                raw_body = self.rfile.read(length).decode("utf-8", errors="replace") if length > 0 else "{}"
                 try:
-                    payload = json.loads(raw_body) if raw_body.strip() else {}
-                except json.JSONDecodeError:
-                    payload = {}
+                    length = int(self.headers.get("Content-Length", "0"))
+                except ValueError:
+                    self._send_json(400, {"error": "Invalid Content-Length"})
+                    return
+                if length < 0 or length > 1024 * 1024:
+                    self._send_json(413, {"error": "Request body too large"})
+                    return
+                body_bytes = self.rfile.read(length)
+                if parsed.path == "/webhook":
+                    secret = orchestrator_ref.config.meta_app_secret
+                    if not secret:
+                        self._send_json(503, {"error": "META_APP_SECRET is not configured"})
+                        return
+                    expected = "sha256=" + hmac.new(secret.encode("utf-8"), body_bytes, hashlib.sha256).hexdigest()
+                    supplied = self.headers.get("X-Hub-Signature-256", "")
+                    if not hmac.compare_digest(supplied, expected):
+                        self._send_json(403, {"error": "Invalid webhook signature"})
+                        return
+                try:
+                    payload = json.loads(body_bytes.decode("utf-8")) if body_bytes else {}
+                    if not isinstance(payload, dict):
+                        raise ValueError("Expected a JSON object")
+                except (ValueError, UnicodeDecodeError):
+                    self._send_json(400, {"error": "Invalid JSON object"})
+                    return
 
                 if parsed.path == "/webhook":
                     threading.Thread(
@@ -1542,6 +1563,7 @@ class InstagramAgentOrchestrator:
                             followers_count=int(profile.get("followers_count", 0)),
                             media_count=int(profile.get("media_count", 0)),
                         )
+                        orchestrator_ref.config.webhook_verify_token = v_tok
                         self._send_json(200, {"ok": True, "profile": profile})
                     except Exception as exc:
                         self._send_json(400, {"ok": False, "error": str(exc)})
@@ -1590,8 +1612,8 @@ class InstagramAgentOrchestrator:
             def log_message(self, fmt: str, *args: Any) -> None:
                 logger.info("HTTP %s - " + fmt, self.address_string(), *args)
 
-        server = http.server.ThreadingHTTPServer(("0.0.0.0", listen_port), AgentHTTPHandler)
-        logger.info("Aria Online Webhook & Control Server listening on http://0.0.0.0:%d (Webhook: /webhook, Status: /api/status)", listen_port)
+        server = http.server.ThreadingHTTPServer((self.config.webhook_host, listen_port), AgentHTTPHandler)
+        logger.info("Aria Online Webhook & Control Server listening on http://%s:%d (Webhook: /webhook, Status: /api/status)", self.config.webhook_host, listen_port)
         if background:
             t = threading.Thread(target=server.serve_forever, daemon=True)
             t.start()
@@ -1608,8 +1630,9 @@ class InstagramAgentOrchestrator:
         )
         while True:
             try:
-                self.process_due_schedules()
-                self.process_new_comments()
+                if self.config.ig_access_token and self.config.ig_user_id:
+                    self.process_due_schedules()
+                    self.process_new_comments()
             except Exception as exc:
                 logger.error("Daemon cycle error: %s", exc)
             time.sleep(self.config.poll_interval_seconds)

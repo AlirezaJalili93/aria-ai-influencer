@@ -10,6 +10,10 @@ env/
 
 # Environment variables & secrets (NEVER commit real tokens!)
 .env
+.env.*
+!.env.example
+.service.backup.*
+data/
 *.env.local
 data/ai_keys_vault.json
 data/ig_account_config.json

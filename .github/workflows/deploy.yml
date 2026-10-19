@@ -25,17 +25,13 @@ jobs:
             if [ -d "$APP_DIR/.git" ]; then
               echo "🔄 Pulling latest changes from Git repository..."
               cd "$APP_DIR"
-              git fetch --all
-              git reset --hard origin/main
+              git fetch origin main
+              git checkout main
+              git merge --ff-only origin/main
             else
               echo "📥 Cloning repository into $APP_DIR..."
               mkdir -p /opt
               git clone "https://github.com/${{ github.repository }}.git" "$APP_DIR"
               cd "$APP_DIR"
             fi
-            chmod +x scripts/*.sh || true
-            cp systemd/aria-instagram-agent.service /etc/systemd/system/aria-instagram-agent.service
-            systemctl daemon-reload
-            systemctl enable aria-instagram-agent.service
-            systemctl restart aria-instagram-agent.service
-            systemctl status aria-instagram-agent.service --no-pager
+            bash scripts/server_git_deploy.sh

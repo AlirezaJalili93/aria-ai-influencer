@@ -21,4 +21,4 @@ COPY . .
 
 EXPOSE 8080
 
-CMD ["python3", "instagram_ai_agent.py", "--serve-webhook", "--port", "8080"]
+CMD ["python3", "instagram_ai_agent.py", "--run-daemon"]

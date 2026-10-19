@@ -5,14 +5,23 @@ Wants=network-online.target
 
 [Service]
 Type=simple
-User=root
+User=aria-agent
+Group=aria-agent
 WorkingDirectory=/opt/aria-ai-influencer
-EnvironmentFile=-/opt/aria-ai-influencer/.env
-ExecStart=/usr/bin/python3 /opt/aria-ai-influencer/instagram_ai_agent.py --serve-webhook --port 8080
+EnvironmentFile=/opt/aria-ai-influencer/.env
+Environment=PYTHONUNBUFFERED=1
+Environment=TZ=Asia/Tehran
+ExecStart=/opt/aria-ai-influencer/.venv/bin/python /opt/aria-ai-influencer/instagram_ai_agent.py --run-daemon
 Restart=always
 RestartSec=5
-StandardOutput=append:/opt/aria-ai-influencer/data/logs/aria_agent.log
-StandardError=append:/opt/aria-ai-influencer/data/logs/aria_agent_error.log
+StandardOutput=journal
+StandardError=journal
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/opt/aria-ai-influencer/data
 
 [Install]
 WantedBy=multi-user.target
