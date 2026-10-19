@@ -10,3 +10,7 @@
 - Direct SSH to the user's server returned `Network is unreachable`; server installation is not represented as completed.
 
 [Desktop](screenshots/dashboard.png) · [Mobile](screenshots/mobile.png)
+
+## FriBiDi runtime installation fix
+
+Python 3.9.25: 14 tests pass, including the typography probe's missing-dependency error and native Persian/Latin rendering with both bundled fonts. A temporary test-only dlopen interceptor reproduces RAQM=False by preventing Pillow from loading FriBiDi. Running the installer's actual dependency block with a package-manager stub then restores the library visibility and passes the real render probe. The test does not claim an AlmaLinux host install; the user's server still needs the updated installer run.
