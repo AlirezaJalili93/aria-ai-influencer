@@ -1,0 +1,27 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Environment variables & secrets (NEVER commit real tokens!)
+.env
+*.env.local
+data/ai_keys_vault.json
+data/ig_account_config.json
+
+# Logs & runtime databases
+data/logs/*.log
+*.log
+*.sqlite3
+*.db
+
+# OS & Editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

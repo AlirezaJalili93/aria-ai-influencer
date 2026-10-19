@@ -1,0 +1,41 @@
+name: Deploy Aria AI Agent to Server (195.248.241.48)
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: Pull from Git & Restart Service on Server
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy via SSH to Linux Server
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SERVER_HOST || '195.248.241.48' }}
+          username: ${{ secrets.SERVER_USER || 'root' }}
+          password: ${{ secrets.SERVER_PASSWORD }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          port: ${{ secrets.SERVER_PORT || 22 }}
+          script: |
+            set -e
+            APP_DIR="/opt/aria-ai-influencer"
+            if [ -d "$APP_DIR/.git" ]; then
+              echo "🔄 Pulling latest changes from Git repository..."
+              cd "$APP_DIR"
+              git fetch --all
+              git reset --hard origin/main
+            else
+              echo "📥 Cloning repository into $APP_DIR..."
+              mkdir -p /opt
+              git clone "https://github.com/${{ github.repository }}.git" "$APP_DIR"
+              cd "$APP_DIR"
+            fi
+            chmod +x scripts/*.sh || true
+            cp systemd/aria-instagram-agent.service /etc/systemd/system/aria-instagram-agent.service
+            systemctl daemon-reload
+            systemctl enable aria-instagram-agent.service
+            systemctl restart aria-instagram-agent.service
+            systemctl status aria-instagram-agent.service --no-pager

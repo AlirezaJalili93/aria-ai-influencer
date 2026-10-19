@@ -1,0 +1,18 @@
+[Unit]
+Description=Aria AI Influencer 24/7 Instagram Agent & Webhook Server
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/opt/aria-ai-influencer
+EnvironmentFile=-/opt/aria-ai-influencer/.env
+ExecStart=/usr/bin/python3 /opt/aria-ai-influencer/instagram_ai_agent.py --serve-webhook --port 8080
+Restart=always
+RestartSec=5
+StandardOutput=append:/opt/aria-ai-influencer/data/logs/aria_agent.log
+StandardError=append:/opt/aria-ai-influencer/data/logs/aria_agent_error.log
+
+[Install]
+WantedBy=multi-user.target
