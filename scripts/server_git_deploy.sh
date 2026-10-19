@@ -51,6 +51,10 @@ if ! python3 -c 'import venv, ensurepip' >/dev/null 2>&1; then
   fi
 fi
 cd "$APP_DIR"
+# Git checkout may have run under umask 077. The service account needs to
+# traverse the app directory and read this entrypoint; secrets stay private.
+chmod 0755 "$APP_DIR"
+chmod 0644 "$APP_DIR/instagram_ai_agent.py"
 python3 -m venv .venv
 .venv/bin/python -m pip install -r requirements.txt
 .venv/bin/python -c 'import cv2, numpy, PIL'
