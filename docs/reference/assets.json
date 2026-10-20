@@ -1,0 +1,41 @@
+[
+  {
+    "alt": "https://lh3.googleusercontent.com/gg/AJWXcNcXjZsh3ZvPfY6e8NRn6FLvUpnfTvNg4dKaHf1zoZ8HncQ7edA1ibW05bPijQDgfp_xvIzunLfRsgQ35bzRZQDq6F_Vu9il_y5xs3Qxh8Aa6bfRi0zvmkfiqGoBhq2t98eaaDHaN5pTYQl_7QBi8y5-lT2KwDpM3p8ruKXeqZYkuPJdN02a=s1600",
+    "src": "https://lh3.googleusercontent.com/gg/AJWXcNcXjZsh3ZvPfY6e8NRn6FLvUpnfTvNg4dKaHf1zoZ8HncQ7edA1ibW05bPijQDgfp_xvIzunLfRsgQ35bzRZQDq6F_Vu9il_y5xs3Qxh8Aa6bfRi0zvmkfiqGoBhq2t98eaaDHaN5pTYQl_7QBi8y5-lT2KwDpM3p8ruKXeqZYkuPJdN02a=s1600",
+    "path": "assets/reference/aria-profile.png",
+    "sha256": "deb3a5753264b29ac798f7d00656efbf730968c2ce7a53d0ec54ef9b7c616dec"
+  },
+  {
+    "alt": "https://lh3.googleusercontent.com/gg/AJWXcNfc3_REH5SA6U3IRmvGMbos-B-z8UKdwROmo_duXDLgMx2LiINV_YRFCQvyoPMbsoh9Qoso7Yoa8F3hcmLUygmVRWLhclM_8e1LxdDGWWCbErbX94lxQf_avTlVnKOuROVl64tBOXdY24JiNO1jG3DTI2Api4HhN-3FlUVbamOIkF0568sh=s1600",
+    "src": "https://lh3.googleusercontent.com/gg/AJWXcNfc3_REH5SA6U3IRmvGMbos-B-z8UKdwROmo_duXDLgMx2LiINV_YRFCQvyoPMbsoh9Qoso7Yoa8F3hcmLUygmVRWLhclM_8e1LxdDGWWCbErbX94lxQf_avTlVnKOuROVl64tBOXdY24JiNO1jG3DTI2Api4HhN-3FlUVbamOIkF0568sh=s1600",
+    "path": "assets/reference/aria-story.png",
+    "sha256": "646e3ae498fd5b4a89e587d200e25a8979e0f5d33d04b4661a52790f67ef0960"
+  },
+  {
+    "alt": "https://lh3.googleusercontent.com/gg/AJWXcNe3yaiBc5EdM0A2rqdaOxB_NX4yP-tzjLLNwWUhdi7evgul0FJyLEEvWTanRuaUhygncDN1bXJnn2H_5D2B8fUFbe81Q0-phNhURM_CVFMmUAwe8DwYt3fyjgOigpuPt18_Zzv120oy2eDodjDr_VyQedL1bie7HctvckFHlHbm9jubWWk=s1600",
+    "src": "https://lh3.googleusercontent.com/gg/AJWXcNe3yaiBc5EdM0A2rqdaOxB_NX4yP-tzjLLNwWUhdi7evgul0FJyLEEvWTanRuaUhygncDN1bXJnn2H_5D2B8fUFbe81Q0-phNhURM_CVFMmUAwe8DwYt3fyjgOigpuPt18_Zzv120oy2eDodjDr_VyQedL1bie7HctvckFHlHbm9jubWWk=s1600",
+    "path": "assets/reference/aria-post.png",
+    "sha256": "3658f75f006da1a8cd9d1634643e7da4085f0881fdd57427b50d0bd995c13056"
+  },
+  {
+    "alt": "https://lh3.googleusercontent.com/gg/AJWXcNd9hdt5cfGPhd7lUrjPKRsb6107MW4ZkJj1MEVW8HNHiQW2VeR4zjppXS9PIce7Lw2vOOQheCCFWslsOTh4ZKBzvsnqvV9eP66w_I82dAgKeBksGN_CIjv9vx-Bf3tiA7kOZS_zHNiV06OIDEYGmBg8VjTzpWux8r4SJWgt-JwpcLO3_mgV=s1600",
+    "src": "https://lh3.googleusercontent.com/gg/AJWXcNd9hdt5cfGPhd7lUrjPKRsb6107MW4ZkJj1MEVW8HNHiQW2VeR4zjppXS9PIce7Lw2vOOQheCCFWslsOTh4ZKBzvsnqvV9eP66w_I82dAgKeBksGN_CIjv9vx-Bf3tiA7kOZS_zHNiV06OIDEYGmBg8VjTzpWux8r4SJWgt-JwpcLO3_mgV=s1600",
+    "path": "assets/reference/corrected-story.png",
+    "sha256": "638d19f68653f7ea51aa2a16dd4a349198c372615e15a2aa451018f9550dd3a9"
+  },
+  {
+    "path": "assets/reference/aria-profile.jpg",
+    "source": "Exact JPEG bytes decoded from the visible Gemini studio image src attribute",
+    "sha256": "cfde8ab364700902f5e95660ddac19cc306adee74ba91b077be00f538a211c2f"
+  },
+  {
+    "path": "assets/reference/aria-story.jpg",
+    "source": "Exact JPEG bytes decoded from the visible Gemini studio image src attribute",
+    "sha256": "cf3ac202b90756c9faeb3b4e2ae318e96e734ee5f03f11a113ad92b1a285b77a"
+  },
+  {
+    "path": "assets/reference/aria-post.jpg",
+    "source": "Exact JPEG bytes decoded from the visible Gemini studio image src attribute",
+    "sha256": "c6a601e2e0481db8b093246589109951a38749e3c16c435bdf1f5e7835b8aed5"
+  }
+]

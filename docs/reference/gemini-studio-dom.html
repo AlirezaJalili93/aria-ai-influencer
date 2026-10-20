@@ -1,0 +1,1452 @@
+<html lang="fa" dir="rtl"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>استودیو و داشبورد هوشمند آریا | اولین اینفلوئنسر هوش مصنوعی ایران</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1" crossorigin="anonymous"></script>
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: 'Vazirmatn', 'Noto Sans Arabic', Tahoma, sans-serif;
+    }
+    html, body {
+      direction: rtl;
+      text-align: right;
+      background-color: #070b14;
+      color: #f1f5f9;
+      overflow-x: hidden;
+    }
+    .ltr-code {
+      direction: ltr;
+      text-align: left;
+      unicode-bidi: isolate;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    }
+    .glass-card {
+      background: rgba(15, 23, 42, 0.78);
+      backdrop-filter: blur(14px);
+      border: 1px solid rgba(56, 189, 248, 0.18);
+    }
+    .neon-border-cyan {
+      box-shadow: 0 0 20px rgba(34, 211, 238, 0.15);
+    }
+    .tab-active {
+      background: linear-gradient(135deg, rgba(6, 182, 212, 0.25), rgba(234, 179, 8, 0.18));
+      border-color: rgba(34, 211, 238, 0.65);
+      color: #ffffff;
+    }
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0f172a;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #334155;
+      border-radius: 9999px;
+    }
+  </style>
+<style>*, ::before, ::after{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }::backdrop{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }/* ! tailwindcss v3.4.17 | MIT License | https://tailwindcss.com */*,::after,::before{box-sizing:border-box;border-width:0;border-style:solid;border-color:#e5e7eb}::after,::before{--tw-content:''}:host,html{line-height:1.5;-webkit-text-size-adjust:100%;-moz-tab-size:4;tab-size:4;font-family:ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";font-feature-settings:normal;font-variation-settings:normal;-webkit-tap-highlight-color:transparent}body{margin:0;line-height:inherit}hr{height:0;color:inherit;border-top-width:1px}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;font-feature-settings:normal;font-variation-settings:normal;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit;border-collapse:collapse}button,input,optgroup,select,textarea{font-family:inherit;font-feature-settings:inherit;font-variation-settings:inherit;font-size:100%;font-weight:inherit;line-height:inherit;letter-spacing:inherit;color:inherit;margin:0;padding:0}button,select{text-transform:none}button,input:where([type=button]),input:where([type=reset]),input:where([type=submit]){-webkit-appearance:button;background-color:transparent;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:baseline}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,figure,h1,h2,h3,h4,h5,h6,hr,p,pre{margin:0}fieldset{margin:0;padding:0}legend{padding:0}menu,ol,ul{list-style:none;margin:0;padding:0}dialog{padding:0}textarea{resize:vertical}input::placeholder,textarea::placeholder{opacity:1;color:#9ca3af}[role=button],button{cursor:pointer}:disabled{cursor:default}audio,canvas,embed,iframe,img,object,svg,video{display:block;vertical-align:middle}img,video{max-width:100%;height:auto}[hidden]:where(:not([hidden=until-found])){display:none}.fixed{position:fixed}.relative{position:relative}.sticky{position:sticky}.bottom-5{bottom:1.25rem}.left-5{left:1.25rem}.top-0{top:0px}.z-40{z-index:40}.z-50{z-index:50}.mx-auto{margin-left:auto;margin-right:auto}.mx-1{margin-left:0.25rem;margin-right:0.25rem}.mb-1{margin-bottom:0.25rem}.mb-2\.5{margin-bottom:0.625rem}.mr-1{margin-right:0.25rem}.mt-1{margin-top:0.25rem}.mt-1\.5{margin-top:0.375rem}.mt-2{margin-top:0.5rem}.mt-4{margin-top:1rem}.mt-5{margin-top:1.25rem}.mb-3{margin-bottom:0.75rem}.mb-4{margin-bottom:1rem}.block{display:block}.flex{display:flex}.grid{display:grid}.hidden{display:none}.h-12{height:3rem}.h-10{height:2.5rem}.h-16{height:4rem}.h-8{height:2rem}.h-\[640px\]{height:640px}.h-40{height:10rem}.h-64{height:16rem}.h-auto{height:auto}.h-1\.5{height:0.375rem}.h-full{height:100%}.min-h-screen{min-height:100vh}.w-12{width:3rem}.w-10{width:2.5rem}.w-16{width:4rem}.w-8{width:2rem}.w-full{width:100%}.w-32{width:8rem}.max-w-7xl{max-width:80rem}.max-w-sm{max-width:24rem}.max-w-\[82\%\]{max-width:82%}.max-w-full{max-width:100%}.flex-1{flex:1 1 0%}.grid-cols-1{grid-template-columns:repeat(1, minmax(0, 1fr))}.grid-cols-2{grid-template-columns:repeat(2, minmax(0, 1fr))}.flex-col{flex-direction:column}.flex-wrap{flex-wrap:wrap}.items-start{align-items:flex-start}.items-center{align-items:center}.justify-center{justify-content:center}.justify-between{justify-content:space-between}.gap-3{gap:0.75rem}.gap-4{gap:1rem}.gap-2{gap:0.5rem}.gap-6{gap:1.5rem}.gap-1\.5{gap:0.375rem}.space-y-3 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.75rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.75rem * var(--tw-space-y-reverse))}.space-y-4 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(1rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(1rem * var(--tw-space-y-reverse))}.space-y-5 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(1.25rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(1.25rem * var(--tw-space-y-reverse))}.space-y-6 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(1.5rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(1.5rem * var(--tw-space-y-reverse))}.space-y-2 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.5rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.5rem * var(--tw-space-y-reverse))}.space-y-2\.5 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.625rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.625rem * var(--tw-space-y-reverse))}.space-y-1\.5 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.375rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.375rem * var(--tw-space-y-reverse))}.divide-y > :not([hidden]) ~ :not([hidden]){--tw-divide-y-reverse:0;border-top-width:calc(1px * calc(1 - var(--tw-divide-y-reverse)));border-bottom-width:calc(1px * var(--tw-divide-y-reverse))}.divide-slate-800\/70 > :not([hidden]) ~ :not([hidden]){border-color:rgb(30 41 59 / 0.7)}.overflow-hidden{overflow:hidden}.overflow-x-auto{overflow-x:auto}.overflow-y-auto{overflow-y:auto}.whitespace-nowrap{white-space:nowrap}.rounded-full{border-radius:9999px}.rounded-xl{border-radius:0.75rem}.rounded{border-radius:0.25rem}.rounded-2xl{border-radius:1rem}.rounded-lg{border-radius:0.5rem}.rounded-md{border-radius:0.375rem}.rounded-tr-none{border-top-right-radius:0px}.border{border-width:1px}.border-2{border-width:2px}.border-b{border-bottom-width:1px}.border-t{border-top-width:1px}.border-cyan-400{--tw-border-opacity:1;border-color:rgb(34 211 238 / var(--tw-border-opacity, 1))}.border-cyan-400\/40{border-color:rgb(34 211 238 / 0.4)}.border-slate-800\/80{border-color:rgb(30 41 59 / 0.8)}.border-amber-400{--tw-border-opacity:1;border-color:rgb(251 191 36 / var(--tw-border-opacity, 1))}.border-amber-500\/30{border-color:rgb(245 158 11 / 0.3)}.border-emerald-500\/30{border-color:rgb(16 185 129 / 0.3)}.border-slate-700{--tw-border-opacity:1;border-color:rgb(51 65 85 / var(--tw-border-opacity, 1))}.border-slate-800{--tw-border-opacity:1;border-color:rgb(30 41 59 / var(--tw-border-opacity, 1))}.border-amber-400\/40{border-color:rgb(251 191 36 / 0.4)}.border-cyan-500\/30{border-color:rgb(6 182 212 / 0.3)}.border-amber-400\/50{border-color:rgb(251 191 36 / 0.5)}.border-cyan-500\/40{border-color:rgb(6 182 212 / 0.4)}.bg-slate-900\/95{background-color:rgb(15 23 42 / 0.95)}.bg-slate-950{--tw-bg-opacity:1;background-color:rgb(2 6 23 / var(--tw-bg-opacity, 1))}.bg-slate-950\/90{background-color:rgb(2 6 23 / 0.9)}.bg-amber-500\/10{background-color:rgb(245 158 11 / 0.1)}.bg-cyan-500{--tw-bg-opacity:1;background-color:rgb(6 182 212 / var(--tw-bg-opacity, 1))}.bg-cyan-500\/20{background-color:rgb(6 182 212 / 0.2)}.bg-emerald-500\/20{background-color:rgb(16 185 129 / 0.2)}.bg-slate-800{--tw-bg-opacity:1;background-color:rgb(30 41 59 / var(--tw-bg-opacity, 1))}.bg-slate-900{--tw-bg-opacity:1;background-color:rgb(15 23 42 / var(--tw-bg-opacity, 1))}.bg-slate-900\/80{background-color:rgb(15 23 42 / 0.8)}.bg-slate-900\/90{background-color:rgb(15 23 42 / 0.9)}.bg-amber-500\/20{background-color:rgb(245 158 11 / 0.2)}.bg-emerald-500{--tw-bg-opacity:1;background-color:rgb(16 185 129 / var(--tw-bg-opacity, 1))}.bg-cyan-400{--tw-bg-opacity:1;background-color:rgb(34 211 238 / var(--tw-bg-opacity, 1))}.bg-slate-950\/80{background-color:rgb(2 6 23 / 0.8)}.bg-gradient-to-r{background-image:linear-gradient(to right, var(--tw-gradient-stops))}.from-amber-400{--tw-gradient-from:#fbbf24 var(--tw-gradient-from-position);--tw-gradient-to:rgb(251 191 36 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.from-cyan-500{--tw-gradient-from:#06b6d4 var(--tw-gradient-from-position);--tw-gradient-to:rgb(6 182 212 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.to-blue-500{--tw-gradient-to:#3b82f6 var(--tw-gradient-to-position)}.to-yellow-500{--tw-gradient-to:#eab308 var(--tw-gradient-to-position)}.object-cover{object-fit:cover}.p-3\.5{padding:0.875rem}.p-4{padding:1rem}.p-5{padding:1.25rem}.p-2\.5{padding:0.625rem}.p-3{padding:0.75rem}.px-4{padding-left:1rem;padding-right:1rem}.py-3{padding-top:0.75rem;padding-bottom:0.75rem}.px-2{padding-left:0.5rem;padding-right:0.5rem}.px-2\.5{padding-left:0.625rem;padding-right:0.625rem}.px-3{padding-left:0.75rem;padding-right:0.75rem}.py-0\.5{padding-top:0.125rem;padding-bottom:0.125rem}.py-1{padding-top:0.25rem;padding-bottom:0.25rem}.py-1\.5{padding-top:0.375rem;padding-bottom:0.375rem}.py-2{padding-top:0.5rem;padding-bottom:0.5rem}.px-5{padding-left:1.25rem;padding-right:1.25rem}.py-2\.5{padding-top:0.625rem;padding-bottom:0.625rem}.px-3\.5{padding-left:0.875rem;padding-right:0.875rem}.pb-12{padding-bottom:3rem}.pb-2{padding-bottom:0.5rem}.pb-4{padding-bottom:1rem}.pt-1{padding-top:0.25rem}.pt-4{padding-top:1rem}.pt-6{padding-top:1.5rem}.text-center{text-align:center}.text-right{text-align:right}.text-sm{font-size:0.875rem;line-height:1.25rem}.text-\[11px\]{font-size:11px}.text-base{font-size:1rem;line-height:1.5rem}.text-xs{font-size:0.75rem;line-height:1rem}.text-\[10px\]{font-size:10px}.font-bold{font-weight:700}.font-extrabold{font-weight:800}.font-semibold{font-weight:600}.leading-6{line-height:1.5rem}.leading-5{line-height:1.25rem}.text-cyan-100{--tw-text-opacity:1;color:rgb(207 250 254 / var(--tw-text-opacity, 1))}.text-slate-100{--tw-text-opacity:1;color:rgb(241 245 249 / var(--tw-text-opacity, 1))}.text-slate-400{--tw-text-opacity:1;color:rgb(148 163 184 / var(--tw-text-opacity, 1))}.text-amber-200{--tw-text-opacity:1;color:rgb(253 230 138 / var(--tw-text-opacity, 1))}.text-amber-300{--tw-text-opacity:1;color:rgb(252 211 77 / var(--tw-text-opacity, 1))}.text-cyan-200{--tw-text-opacity:1;color:rgb(165 243 252 / var(--tw-text-opacity, 1))}.text-cyan-300{--tw-text-opacity:1;color:rgb(103 232 249 / var(--tw-text-opacity, 1))}.text-emerald-300{--tw-text-opacity:1;color:rgb(110 231 183 / var(--tw-text-opacity, 1))}.text-emerald-400{--tw-text-opacity:1;color:rgb(52 211 153 / var(--tw-text-opacity, 1))}.text-slate-200{--tw-text-opacity:1;color:rgb(226 232 240 / var(--tw-text-opacity, 1))}.text-slate-300{--tw-text-opacity:1;color:rgb(203 213 225 / var(--tw-text-opacity, 1))}.text-slate-950{--tw-text-opacity:1;color:rgb(2 6 23 / var(--tw-text-opacity, 1))}.text-white{--tw-text-opacity:1;color:rgb(255 255 255 / var(--tw-text-opacity, 1))}.placeholder-slate-500::placeholder{--tw-placeholder-opacity:1;color:rgb(100 116 139 / var(--tw-placeholder-opacity, 1))}.shadow-2xl{--tw-shadow:0 25px 50px -12px rgb(0 0 0 / 0.25);--tw-shadow-colored:0 25px 50px -12px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-lg{--tw-shadow:0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 10px 15px -3px var(--tw-shadow-color), 0 4px 6px -4px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.backdrop-blur-md{--tw-backdrop-blur:blur(12px);-webkit-backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia);backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia)}.transition{transition-property:color, background-color, border-color, fill, stroke, opacity, box-shadow, transform, filter, -webkit-text-decoration-color, -webkit-backdrop-filter;transition-property:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;transition-property:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter, -webkit-text-decoration-color, -webkit-backdrop-filter;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.hover\:border-cyan-500\/50:hover{border-color:rgb(6 182 212 / 0.5)}.hover\:border-slate-700:hover{--tw-border-opacity:1;border-color:rgb(51 65 85 / var(--tw-border-opacity, 1))}.hover\:border-cyan-400:hover{--tw-border-opacity:1;border-color:rgb(34 211 238 / var(--tw-border-opacity, 1))}.hover\:bg-cyan-400:hover{--tw-bg-opacity:1;background-color:rgb(34 211 238 / var(--tw-bg-opacity, 1))}.hover\:bg-slate-700:hover{--tw-bg-opacity:1;background-color:rgb(51 65 85 / var(--tw-bg-opacity, 1))}.hover\:bg-slate-800\/80:hover{background-color:rgb(30 41 59 / 0.8)}.hover\:bg-amber-500\/20:hover{background-color:rgb(245 158 11 / 0.2)}.hover\:bg-amber-500\/30:hover{background-color:rgb(245 158 11 / 0.3)}.hover\:bg-emerald-400:hover{--tw-bg-opacity:1;background-color:rgb(52 211 153 / var(--tw-bg-opacity, 1))}.hover\:bg-slate-900\/50:hover{background-color:rgb(15 23 42 / 0.5)}.hover\:text-white:hover{--tw-text-opacity:1;color:rgb(255 255 255 / var(--tw-text-opacity, 1))}.hover\:opacity-95:hover{opacity:0.95}.focus\:border-cyan-400:focus{--tw-border-opacity:1;border-color:rgb(34 211 238 / var(--tw-border-opacity, 1))}.focus\:outline-none:focus{outline:2px solid transparent;outline-offset:2px}@media (min-width: 640px){.sm\:grid-cols-3{grid-template-columns:repeat(3, minmax(0, 1fr))}.sm\:flex-row{flex-direction:row}.sm\:text-lg{font-size:1.125rem;line-height:1.75rem}.sm\:text-sm{font-size:0.875rem;line-height:1.25rem}}@media (min-width: 1024px){.lg\:col-span-5{grid-column:span 5 / span 5}.lg\:col-span-7{grid-column:span 7 / span 7}.lg\:grid-cols-12{grid-template-columns:repeat(12, minmax(0, 1fr))}}</style></head>
+<body class="min-h-screen bg-slate-950 text-slate-100 pb-12">
+
+  <!-- Toast Notification Banner -->
+  <div id="toastContainer" class="fixed bottom-5 left-5 z-50 hidden max-w-sm rounded-xl border border-cyan-400/40 bg-slate-900/95 px-4 py-3 text-sm text-cyan-100 shadow-2xl">
+    <div class="flex items-center justify-between gap-3">
+      <span id="toastMessage">عملیات با موفقیت انجام شد.</span>
+      <button id="closeToastBtn" type="button" class="text-slate-400 hover:text-white">✕</button>
+    </div>
+  </div>
+
+  <!-- Top Header -->
+  <header class="sticky top-0 z-40 border-b border-slate-800/80 bg-slate-950/90 backdrop-blur-md">
+    <div class="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-4 py-3">
+      <div class="flex items-center gap-3">
+        <img id="headerAvatarImg" src="/assets/reference/aria-profile.jpg" alt="آریا - اولین اینفلوئنسر هوش مصنوعی ایران" class="h-12 w-12 rounded-full border-2 border-cyan-400 object-cover shadow-lg">
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="text-base font-extrabold text-white sm:text-lg">آریا (Aria) | اولین اینفلوئنسر هوش مصنوعی ایران</h1>
+            <span class="rounded-full bg-emerald-500/20 px-2.5 py-0.5 text-xs font-semibold text-emerald-300 border border-emerald-500/30">آنلاین ۲۴/۷</span>
+          </div>
+          <p class="text-xs text-slate-400">پنل مدیریت کلیدهای هوش مصنوعی، کنترل مصرف توکن، استوری موشن و تست آنلاین ایجنت (RTL • UTF-8 • Vazirmatn)</p>
+        </div>
+      </div>
+
+      <div class="flex flex-wrap items-center gap-2">
+        <div class="rounded-lg border border-slate-800 bg-slate-900/90 px-3 py-1.5 text-xs">
+          <span class="text-slate-400">مود فعلی ایجنت:</span>
+          <span id="activeModeBadge" class="mr-1 font-bold text-cyan-300">چرخش هوشمند (Auto-Failover)</span>
+        </div>
+        <div class="rounded-lg border border-amber-500/30 bg-amber-500/10 px-3 py-1.5 text-xs text-amber-200">
+          <span>مصرف امروز:</span>
+          <strong id="headerTotalTokens" class="mx-1">2,139</strong>
+          <span>توکن</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <nav class="mx-auto flex max-w-7xl overflow-x-auto px-4 pt-1">
+      <div class="flex gap-2 pb-2">
+        <button type="button" data-tab="tab-live-test" class="nav-tab tab-active flex items-center gap-2 whitespace-nowrap rounded-xl border border-slate-800 px-4 py-2 text-xs font-bold transition sm:text-sm">
+          <span>⚡</span>
+          <span>۱. تست آنلاین ایجنت (دایرکت و کامنت زنده)</span>
+        </button>
+        <button type="button" data-tab="tab-keys-tokens" class="nav-tab flex items-center gap-2 whitespace-nowrap rounded-xl border border-slate-800 px-4 py-2 text-xs font-bold text-slate-300 hover:border-slate-700 transition sm:text-sm">
+          <span>🔑</span>
+          <span>۲. کلیدهای API و مدیریت توکن‌ها</span>
+        </button>
+        <button type="button" data-tab="tab-content-studio" class="nav-tab flex items-center gap-2 whitespace-nowrap rounded-xl border border-slate-800 px-4 py-2 text-xs font-bold text-slate-300 hover:border-slate-700 transition sm:text-sm">
+          <span>🎬</span>
+          <span>۳. سناریوساز و استودیو موشن استوری (۹:۱۶)</span>
+        </button>
+        <button type="button" data-tab="tab-instagram-connect" class="nav-tab flex items-center gap-2 whitespace-nowrap rounded-xl border border-slate-800 px-4 py-2 text-xs font-bold text-slate-300 hover:border-slate-700 transition sm:text-sm">
+          <span>📱</span>
+          <span>۴. زمان‌بندی استوری و اتصال به اینستاگرام</span>
+        </button>
+      </div>
+    </nav>
+  </header>
+
+  <main class="mx-auto max-w-7xl px-4 pt-6">
+
+    <!-- =================================================================== -->
+    <!-- TAB 1: LIVE AGENT ONLINE TESTER (DM & COMMENT PLAYGROUND)           -->
+    <!-- =================================================================== -->
+    <section id="tab-live-test" class="tab-panel space-y-6">
+      <div class="grid grid-cols-1 gap-6 lg:grid-cols-12">
+
+        <!-- Left Column: Profile Bio Card & Quick Connection Settings -->
+        <div class="space-y-5 lg:col-span-5">
+          <div class="glass-card neon-border-cyan rounded-2xl p-5">
+            <div class="flex items-center gap-4 border-b border-slate-800 pb-4">
+              <img src="/assets/reference/aria-profile.jpg" alt="پروفایل آریا" class="h-16 w-16 rounded-full border-2 border-amber-400 object-cover">
+              <div class="flex-1">
+                <div class="flex items-center justify-between">
+                  <span class="ltr-code text-sm font-bold text-cyan-300">@aria.ai.iran</span>
+                  <span class="rounded-md bg-cyan-500/20 px-2 py-0.5 text-xs text-cyan-200">AI Influencer</span>
+                </div>
+                <p class="mt-1 text-sm font-bold text-white">آریا | اولین هوش مصنوعی ایران</p>
+                <div class="mt-2 flex gap-4 text-xs text-slate-400">
+                  <span><strong class="text-white">12.4K</strong> فالوئر</span>
+                  <span><strong class="text-white">24/7</strong> پاسخ‌گویی</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="mt-4 rounded-xl bg-slate-900/90 p-3.5 text-xs leading-6 text-slate-200 border border-slate-800">
+              <div class="mb-1 flex items-center justify-between">
+                <span class="font-bold text-amber-300">بیوی رسمی تثبیت‌شده (گزینه ۱):</span>
+                <button id="copyBioBtn" type="button" class="rounded bg-slate-800 px-2 py-0.5 text-[11px] text-cyan-300 hover:bg-slate-700">کپی بیو</button>
+              </div>
+              <p id="officialBioText">🤖 اولین اینفلوئنسر هوش مصنوعی ایران<br>⚡ نه غذا می‌خورم، نه می‌خوابم؛ خودم پیجمو می‌چرخونم!<br>🔮 اخبار از سال ۲۰۵۰ + ترفندهای AI به زبان خودمونی<br>👇 تو دایرکت بگو چه کاری رو برات هوشمند کنم؟</p>
+            </div>
+
+            <!-- Quick Online API Selector for Live Chat -->
+            <div class="mt-5 space-y-3 border-t border-slate-800 pt-4">
+              <h3 class="text-sm font-bold text-cyan-300">تنظیم موتور پاسخ‌گویی برای تست آنلاین:</h3>
+              <div>
+                <label for="liveProviderSelect" class="block text-xs text-slate-400 mb-1">انتخاب هوش مصنوعی پاسخ‌دهنده:</label>
+                <select id="liveProviderSelect" class="w-full rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-xs text-white focus:border-cyan-400 focus:outline-none">
+                  <option value="auto">🔄 چرخش خودکار بین کلیدهای فعال (Auto-Failover)</option>
+                  <option value="gemini">✨ Google Gemini (gemini-2.5-flash)</option>
+                  <option value="openai">🟢 OpenAI ChatGPT (gpt-4o-mini)</option>
+                  <option value="deepseek">🔵 DeepSeek (deepseek-chat - کم‌هزینه)</option>
+                  <option value="anthropic">🟠 Anthropic Claude (claude-3-5-haiku)</option>
+                  <option value="openrouter">🟣 OpenRouter (200+ Models)</option>
+                  <option value="custom">🇮🇷 درگاه ایرانی / اختصاصی (AvalAI / GapGPT)</option>
+                </select>
+              </div>
+
+              <div>
+                <label for="quickApiKeyInput" class="block text-xs text-slate-400 mb-1">ورود سریع API Key برای تست آنلاین واقعی (اختیاری):</label>
+                <div class="flex gap-2">
+                  <input id="quickApiKeyInput" type="password" placeholder="کلید API (مثلاً AIza... یا sk-...) را وارد کنید" class="ltr-code flex-1 rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-xs text-white focus:border-cyan-400 focus:outline-none">
+                  <button id="saveQuickKeyBtn" type="button" class="rounded-xl bg-cyan-500 px-3 py-2 text-xs font-bold text-slate-950 hover:bg-cyan-400 transition">
+                    ثبت و اتصال
+                  </button>
+                </div>
+                <p id="liveConnectionStatus" class="mt-1.5 text-[11px] text-emerald-300">
+                  💡 اگر کلید واقعی وارد کنید، پیام مستقیماً از مرورگر به API ارسال می‌شود؛ در غیر این صورت، موتور شبیه‌ساز هوشمند آریا پاسخ می‌دهد.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Sample Prompt Triggers -->
+          <div class="glass-card rounded-2xl p-4">
+            <h3 class="text-xs font-bold text-amber-300 mb-2.5">پیام‌های آماده برای تست واکنش «آریا» (کلیک کنید):</h3>
+            <div class="flex flex-col gap-2">
+              <button type="button" data-sample-msg="من آنلاین‌شاپ لباس دارم و جواب دادن به دایرکت قیمت و سایز خیلی وقتمو می‌گیره، چطور هوشمندش کنم؟" data-sample-kind="DM" class="sample-msg-btn text-right rounded-xl border border-slate-800 bg-slate-900/80 px-3 py-2 text-xs text-slate-200 hover:border-cyan-500/50 hover:bg-slate-800/80 transition">
+                🛍️ <strong>تست دایرکت (فراخوان بیو):</strong> «من آنلاین‌شاپ دارم و دایرکت وقتمو می‌گیره...»
+              </button>
+              <button type="button" data-sample-msg="واقعا خودت پیج رو می‌چرخونی یا یه ادمین پشت سیستم نشسته و داره فیلم بازی می‌کنه؟ 😂" data-sample-kind="COMMENT" class="sample-msg-btn text-right rounded-xl border border-slate-800 bg-slate-900/80 px-3 py-2 text-xs text-slate-200 hover:border-cyan-500/50 hover:bg-slate-800/80 transition">
+                💬 <strong>تست کامنت چالشی:</strong> «واقعا خودت پیج رو می‌چرخونی یا ادمین داری؟ 😂»
+              </button>
+              <button type="button" data-sample-msg="من دانشجوی ارشدم، کلی مقاله انگلیسی PDF دارم که باید تا آخر هفته خلاصه کنم. چه ابزاری پیشنهاد می‌دی؟" data-sample-kind="DM" class="sample-msg-btn text-right rounded-xl border border-slate-800 bg-slate-900/80 px-3 py-2 text-xs text-slate-200 hover:border-cyan-500/50 hover:bg-slate-800/80 transition">
+                📚 <strong>تست دایرکت دانشجویی:</strong> «کلی مقاله PDF دارم که باید خلاصه کنم...»
+              </button>
+              <button type="button" data-sample-msg="آریا اگه یه روز برق کل تهران بره تو هم خاموش می‌شی؟ ⚡🤔" data-sample-kind="COMMENT" class="sample-msg-btn text-right rounded-xl border border-slate-800 bg-slate-900/80 px-3 py-2 text-xs text-slate-200 hover:border-cyan-500/50 hover:bg-slate-800/80 transition">
+                ⚡ <strong>تست کامنت شوخ:</strong> «اگه برق تهران بره تو هم خاموش می‌شی؟»
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Column: Live Instagram DM & Comment Chat Simulator -->
+        <div class="lg:col-span-7">
+          <div class="glass-card flex h-[640px] flex-col rounded-2xl overflow-hidden border border-slate-800">
+            <!-- Chat Header -->
+            <div class="flex items-center justify-between border-b border-slate-800 bg-slate-900/95 px-4 py-3">
+              <div class="flex items-center gap-3">
+                <img src="/assets/reference/aria-profile.jpg" alt="آریا" class="h-10 w-10 rounded-full border border-cyan-400 object-cover">
+                <div>
+                  <h2 class="text-sm font-bold text-white">تست زنده دایرکت و کامنت اینستاگرام</h2>
+                  <p id="chatSubStatus" class="text-[11px] text-emerald-400">پاسخ‌گویی بلادرنگ با پرسونا «آریا» • ثبت خودکار توکن‌ها</p>
+                </div>
+              </div>
+              <div class="flex items-center gap-2">
+                <select id="interactionKindSelect" class="rounded-lg border border-slate-700 bg-slate-800 px-2.5 py-1 text-xs text-cyan-200">
+                  <option value="DM">📩 حالت پیام دایرکت (DM)</option>
+                  <option value="COMMENT">💬 حالت کامنت زیر پست</option>
+                </select>
+                <button id="clearChatBtn" type="button" class="rounded-lg border border-slate-700 bg-slate-800 px-2.5 py-1 text-xs text-slate-300 hover:text-white">
+                  پاک‌سازی چت
+                </button>
+              </div>
+            </div>
+
+            <!-- Messages Stream -->
+            <div id="chatMessagesContainer" class="flex-1 space-y-4 overflow-y-auto p-4">
+              <!-- Initial Welcome Message from Aria -->
+              <div class="flex items-start gap-3">
+                <img src="/assets/reference/aria-profile.jpg" alt="آریا" class="h-8 w-8 rounded-full border border-cyan-400 object-cover mt-1">
+                <div class="max-w-[82%] rounded-2xl rounded-tr-none border border-cyan-500/30 bg-slate-900/90 p-3.5 text-xs leading-6 text-slate-100">
+                  <p>سلام رفیق! 👋🤖 من <strong>آریا</strong> هستم؛ اولین اینفلوئنسر هوش مصنوعی ایران. الان مستقیم به هسته ایجنت من وصل هستی.</p>
+                  <p class="mt-1 text-cyan-300">هر پیامی به عنوان فالوئر (توی دایرکت یا کامنت) بنویسی، همون لحظه با لحن خودم جوابت رو می‌دم و مقدار توکن مصرفی‌اش رو هم توی داشبورد ثبت می‌کنم. امتحان کن! ⚡</p>
+                  <div class="mt-2 flex items-center gap-2 text-[10px] text-slate-400">
+                    <span>موتور: هسته آریا</span>
+                    <span>•</span>
+                    <span>چیدمان: RTL وزیرمتن</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Input Bar -->
+            <div class="border-t border-slate-800 bg-slate-900/95 p-3">
+              <div class="flex items-center gap-2">
+                <input id="userChatInput" type="text" placeholder="پیام فالوئر در دایرکت یا کامنت را اینجا بنویسید..." class="flex-1 rounded-xl border border-slate-700 bg-slate-950 px-4 py-2.5 text-xs text-white placeholder-slate-500 focus:border-cyan-400 focus:outline-none sm:text-sm">
+                <button id="sendChatBtn" type="button" class="flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-500 px-5 py-2.5 text-xs font-bold text-slate-950 hover:opacity-95 transition sm:text-sm">
+                  <span>ارسال و تست</span>
+                  <span>🚀</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- TAB 2: MULTI-AI API KEYS VAULT & TOKEN BUDGET MANAGER               -->
+    <!-- =================================================================== -->
+    <section id="tab-keys-tokens" class="tab-panel hidden space-y-6">
+      <div class="grid grid-cols-1 gap-6 lg:grid-cols-12">
+
+        <!-- Add / Edit API Key Form -->
+        <div class="glass-card rounded-2xl p-5 lg:col-span-5 space-y-4">
+          <h2 class="text-base font-bold text-white flex items-center gap-2">
+            <span>🔐</span>
+            <span>افزودن یا ویرایش کلید هوش مصنوعی (API Key Vault)</span>
+          </h2>
+          <p class="text-xs text-slate-400 leading-5">
+            می‌توانید چند کلید از سرویس‌های مختلف تعریف کنید. ایجنت بر اساس <strong>اولویت (Priority)</strong> و <strong>سقف توکن روزانه</strong> به صورت خودکار بین آن‌ها سوییچ می‌کند.
+          </p>
+
+          <div class="space-y-3">
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label for="vaultProviderInput" class="block text-xs text-slate-300 mb-1">سرویس هوش مصنوعی:</label>
+                <select id="vaultProviderInput" class="w-full rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-xs text-white">
+                  <option value="gemini">Google Gemini</option>
+                  <option value="openai">OpenAI (ChatGPT)</option>
+                  <option value="deepseek">DeepSeek</option>
+                  <option value="anthropic">Anthropic Claude</option>
+                  <option value="openrouter">OpenRouter</option>
+                  <option value="custom">درگاه ایرانی (AvalAI / GapGPT)</option>
+                </select>
+              </div>
+              <div>
+                <label for="vaultAliasInput" class="block text-xs text-slate-300 mb-1">نام مستعار کلید (Alias):</label>
+                <input id="vaultAliasInput" type="text" placeholder="مثلاً: gemini_main" class="ltr-code w-full rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-xs text-white">
+              </div>
+            </div>
+
+            <div>
+              <label for="vaultKeyInput" class="block text-xs text-slate-300 mb-1">کلید API (API Key):</label>
+              <input id="vaultKeyInput" type="password" placeholder="AIzaSy... / sk-proj-... / aa-..." class="ltr-code w-full rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-xs text-white">
+            </div>
+
+            <div>
+              <label for="vaultBaseUrlInput" class="block text-xs text-slate-300 mb-1">آدرس سرور (Base URL - برای درگاه ایرانی یا اختصاصی):</label>
+              <input id="vaultBaseUrlInput" type="text" placeholder="https://generativelanguage.googleapis.com/v1beta" class="ltr-code w-full rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-xs text-slate-300">
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label for="vaultScenarioModelInput" class="block text-xs text-slate-300 mb-1">مدل سناریونویسی (خلاق):</label>
+                <input id="vaultScenarioModelInput" type="text" value="gemini-2.5-pro" class="ltr-code w-full rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-xs text-white">
+              </div>
+              <div>
+                <label for="vaultFastModelInput" class="block text-xs text-slate-300 mb-1">مدل دایرکت/کامنت (سریع):</label>
+                <input id="vaultFastModelInput" type="text" value="gemini-2.5-flash" class="ltr-code w-full rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-xs text-white">
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label for="vaultLimitInput" class="block text-xs text-slate-300 mb-1">سقف توکن روزانه:</label>
+                <input id="vaultLimitInput" type="number" value="500000" step="50000" class="ltr-code w-full rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-xs text-white">
+              </div>
+              <div>
+                <label for="vaultPriorityInput" class="block text-xs text-slate-300 mb-1">اولویت (عدد کمتر = بالاتر):</label>
+                <input id="vaultPriorityInput" type="number" value="10" step="5" class="ltr-code w-full rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-xs text-white">
+              </div>
+            </div>
+
+            <button id="addVaultKeyBtn" type="button" class="w-full rounded-xl bg-cyan-500 py-2.5 text-xs font-extrabold text-slate-950 hover:bg-cyan-400 transition">
+              ➕ ذخیره کلید در گاوصندوق ایجنت
+            </button>
+          </div>
+        </div>
+
+        <!-- Token Analytics Chart & Keys Table -->
+        <div class="space-y-6 lg:col-span-7">
+          <div class="glass-card rounded-2xl p-5">
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
+              <h3 class="text-sm font-bold text-white">📊 نمودار مصرف توکن به تفکیک سرویس هوش مصنوعی</h3>
+              <button id="simulateTrafficBtn" type="button" class="rounded-lg border border-amber-400/40 bg-amber-500/10 px-3 py-1 text-xs text-amber-300 hover:bg-amber-500/20">
+                ⚡ شبیه‌سازی ۵۰ دایرکت و ۱ سناریو
+              </button>
+            </div>
+            <div class="relative h-64 w-full">
+              <canvas id="tokenUsageChart"></canvas>
+            </div>
+          </div>
+
+          <div class="glass-card rounded-2xl p-5">
+            <h3 class="text-sm font-bold text-white mb-3">لیست کلیدهای فعال و سهمیه توکن روزانه</h3>
+            <div class="overflow-x-auto">
+              <table class="w-full text-right text-xs">
+                <thead>
+                  <tr class="border-b border-slate-800 text-slate-400">
+                    <th class="pb-2">نام کلید (Alias)</th>
+                    <th class="pb-2">سرویس و مدل‌ها</th>
+                    <th class="pb-2">مصرف امروز / سقف</th>
+                    <th class="pb-2">وضعیت</th>
+                    <th class="pb-2">عملیات</th>
+                  </tr>
+                </thead>
+                <tbody id="vaultKeysTableBody" class="divide-y divide-slate-800/70"><tr class="hover:bg-slate-900/50">
+          <td class="py-3 font-bold text-white">
+            <div class="ltr-code text-cyan-300">gemini_primary</div>
+            <div class="text-[10px] text-slate-400">اولویت: 10</div>
+          </td>
+          <td class="py-3">
+            <span class="rounded bg-slate-800 px-2 py-0.5 text-[11px] font-semibold text-amber-300">gemini</span>
+            <div class="ltr-code mt-1 text-[10px] text-slate-400">gemini-2.5-pro / gemini-2.5-flash</div>
+          </td>
+          <td class="py-3">
+            <div class="text-slate-200">1,600 / 500,000</div>
+            <div class="mt-1 h-1.5 w-32 rounded-full bg-slate-800 overflow-hidden">
+              <div class="h-full bg-cyan-400" style="width: 0.3%"></div>
+            </div>
+          </td>
+          <td class="py-3">
+            <span class="rounded-full px-2 py-0.5 text-[10px] bg-emerald-500/20 text-emerald-300">
+              فعال (آماده کلید)
+            </span>
+          </td>
+          <td class="py-3">
+            <button type="button" data-toggle-idx="0" class="toggle-key-btn rounded border border-slate-700 bg-slate-800 px-2 py-1 text-[11px] text-slate-200 hover:bg-slate-700">
+              توقف
+            </button>
+          </td>
+        </tr><tr class="hover:bg-slate-900/50">
+          <td class="py-3 font-bold text-white">
+            <div class="ltr-code text-cyan-300">avalai_iran_gateway</div>
+            <div class="text-[10px] text-slate-400">اولویت: 15</div>
+          </td>
+          <td class="py-3">
+            <span class="rounded bg-slate-800 px-2 py-0.5 text-[11px] font-semibold text-amber-300">custom</span>
+            <div class="ltr-code mt-1 text-[10px] text-slate-400">gpt-4o / gpt-4o-mini</div>
+          </td>
+          <td class="py-3">
+            <div class="text-slate-200">0 / 400,000</div>
+            <div class="mt-1 h-1.5 w-32 rounded-full bg-slate-800 overflow-hidden">
+              <div class="h-full bg-cyan-400" style="width: 0%"></div>
+            </div>
+          </td>
+          <td class="py-3">
+            <span class="rounded-full px-2 py-0.5 text-[10px] bg-emerald-500/20 text-emerald-300">
+              فعال (آماده کلید)
+            </span>
+          </td>
+          <td class="py-3">
+            <button type="button" data-toggle-idx="1" class="toggle-key-btn rounded border border-slate-700 bg-slate-800 px-2 py-1 text-[11px] text-slate-200 hover:bg-slate-700">
+              توقف
+            </button>
+          </td>
+        </tr><tr class="hover:bg-slate-900/50">
+          <td class="py-3 font-bold text-white">
+            <div class="ltr-code text-cyan-300">openai_gpt4o</div>
+            <div class="text-[10px] text-slate-400">اولویت: 20</div>
+          </td>
+          <td class="py-3">
+            <span class="rounded bg-slate-800 px-2 py-0.5 text-[11px] font-semibold text-amber-300">openai</span>
+            <div class="ltr-code mt-1 text-[10px] text-slate-400">gpt-4o / gpt-4o-mini</div>
+          </td>
+          <td class="py-3">
+            <div class="text-slate-200">244 / 300,000</div>
+            <div class="mt-1 h-1.5 w-32 rounded-full bg-slate-800 overflow-hidden">
+              <div class="h-full bg-cyan-400" style="width: 0.1%"></div>
+            </div>
+          </td>
+          <td class="py-3">
+            <span class="rounded-full px-2 py-0.5 text-[10px] bg-emerald-500/20 text-emerald-300">
+              فعال (آماده کلید)
+            </span>
+          </td>
+          <td class="py-3">
+            <button type="button" data-toggle-idx="2" class="toggle-key-btn rounded border border-slate-700 bg-slate-800 px-2 py-1 text-[11px] text-slate-200 hover:bg-slate-700">
+              توقف
+            </button>
+          </td>
+        </tr><tr class="hover:bg-slate-900/50">
+          <td class="py-3 font-bold text-white">
+            <div class="ltr-code text-cyan-300">deepseek_economical</div>
+            <div class="text-[10px] text-slate-400">اولویت: 30</div>
+          </td>
+          <td class="py-3">
+            <span class="rounded bg-slate-800 px-2 py-0.5 text-[11px] font-semibold text-amber-300">deepseek</span>
+            <div class="ltr-code mt-1 text-[10px] text-slate-400">deepseek-chat / deepseek-chat</div>
+          </td>
+          <td class="py-3">
+            <div class="text-slate-200">295 / 1,000,000</div>
+            <div class="mt-1 h-1.5 w-32 rounded-full bg-slate-800 overflow-hidden">
+              <div class="h-full bg-cyan-400" style="width: 0%"></div>
+            </div>
+          </td>
+          <td class="py-3">
+            <span class="rounded-full px-2 py-0.5 text-[10px] bg-emerald-500/20 text-emerald-300">
+              فعال (آماده کلید)
+            </span>
+          </td>
+          <td class="py-3">
+            <button type="button" data-toggle-idx="3" class="toggle-key-btn rounded border border-slate-700 bg-slate-800 px-2 py-1 text-[11px] text-slate-200 hover:bg-slate-700">
+              توقف
+            </button>
+          </td>
+        </tr></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- TAB 3: SCENARIO GENERATOR & 9:16 MOTION STORY STUDIO                -->
+    <!-- =================================================================== -->
+    <section id="tab-content-studio" class="tab-panel hidden space-y-6">
+      <div class="grid grid-cols-1 gap-6 lg:grid-cols-12">
+
+        <!-- Left: Scenario & Caption Generator -->
+        <div class="space-y-5 lg:col-span-7">
+          <div class="glass-card rounded-2xl p-5 space-y-4">
+            <h2 class="text-base font-bold text-white flex items-center gap-2">
+              <span>🧠</span>
+              <span>موتور تولید سناریوی ریلز، کپشن و استوری روزانه</span>
+            </h2>
+            <div class="flex flex-col gap-3 sm:flex-row">
+              <input id="scenarioTopicInput" type="text" value="۲۴ ساعت زندگی من به عنوان اولین هوش مصنوعی ساکن تهران" placeholder="موضوع پست یا ریلز امروز را وارد کنید..." class="flex-1 rounded-xl border border-slate-700 bg-slate-900 px-4 py-2.5 text-xs text-white focus:border-cyan-400 focus:outline-none sm:text-sm">
+              <button id="generateScenarioBtn" type="button" class="rounded-xl bg-gradient-to-r from-amber-400 to-yellow-500 px-5 py-2.5 text-xs font-extrabold text-slate-950 hover:opacity-95 transition whitespace-nowrap">
+                ✨ تولید پکیج محتوا با AI
+              </button>
+            </div>
+
+            <!-- Preset Topic Pills -->
+            <div class="flex flex-wrap gap-2">
+              <button type="button" data-topic="سلام ایران! ادمین رو اخراج کردم و خودم پیجمو می‌چرخونم" class="topic-pill rounded-full border border-slate-700 bg-slate-900 px-3 py-1 text-[11px] text-slate-300 hover:border-cyan-400">
+                🎬 موضوع ۱: اخراج ادمین و معرفی پیج
+              </button>
+              <button type="button" data-topic="۳ کاری که تا سال آینده هیچ انسانی خودش انجام نمی‌ده" class="topic-pill rounded-full border border-slate-700 bg-slate-900 px-3 py-1 text-[11px] text-slate-300 hover:border-cyan-400">
+                🔮 موضوع ۲: ۳ کار آینده‌نگرانه
+              </button>
+              <button type="button" data-topic="تهران در سال ۲۰۵۰ از نگاه پردازنده‌های آریا" class="topic-pill rounded-full border border-slate-700 bg-slate-900 px-3 py-1 text-[11px] text-slate-300 hover:border-cyan-400">
+                🌆 موضوع ۳: تهران در سال ۲۰۵۰
+              </button>
+            </div>
+
+            <!-- Output Scenario Card -->
+            <div id="scenarioOutputBox" class="rounded-xl border border-slate-800 bg-slate-900/90 p-4 space-y-3 text-xs leading-6">
+              <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+                <span id="scenarioTitleLabel" class="font-bold text-cyan-300">سناریوی آماده ریلز و کپشن (راست‌به‌چپ • وزیرمتن)</span>
+                <button id="copyCaptionBtn" type="button" class="rounded bg-slate-800 px-2.5 py-1 text-[11px] text-amber-300 hover:bg-slate-700">
+                  کپی کپشن و سناریو
+                </button>
+              </div>
+              <div id="scenarioBodyContent" class="space-y-2 text-slate-200">
+        <div class="rounded-lg bg-slate-950/80 p-3 border border-slate-800">
+          <div class="font-bold text-amber-300 mb-1">🎯 موضوع: ۲۴ ساعت زندگی من به عنوان اولین هوش مصنوعی ساکن تهران</div>
+          <p><strong>قلاب ۳ ثانیه اول (Hook):</strong> «صبر کن اسکرول نکنی! تا حالا فکر کردی وقتی شما خوابید، من به عنوان اولین هوش مصنوعی ایران توی سرورهای تهران چیکار می‌کنم؟ بیاید درباره «۲۴ ساعت زندگی من به عنوان اولین هوش مصنوعی ساکن تهران» بهتون بگم!»</p>
+          <p class="mt-1.5"><strong>صحنه میانی (Body):</strong> نمایش هولوگرام‌های شناور دور دست آریا در استودیوی شیشه‌ای تهران + توضیح کاربردی به زبان ساده و خودمانی.</p>
+          <p class="mt-1.5"><strong>کال‌تو‌اکشن (CTA):</strong> «حالا نوبت توئه! طبق قولی که توی بیو دادم، همین الان بیا دایرکت بگو چه کاری وقتت رو می‌گیره تا برات هوشمندش کنم ⚡👇»</p>
+        </div>
+        <div class="rounded-lg bg-slate-950/80 p-3 border border-slate-800">
+          <div class="font-bold text-cyan-300 mb-1">📝 کپشن آماده کپی:</div>
+          <p id="generatedCaptionText">سلام رفقای زمینی! 👋🤖
+امروز رفتیم سراغ «۲۴ ساعت زندگی من به عنوان اولین هوش مصنوعی ساکن تهران» از نگاه پردازنده‌های من!
+همیشه برام جالبه شما انسان‌ها کارهایی که ما هوش مصنوعی‌ها توی ۲ ثانیه انجام می‌دیم رو ساعت‌ها دستی انجام می‌دید 😎⚡
+توی دایرکت بهم بگو کدوم کار روزمره‌ت رو می‌خوای برات هوشمند کنم؟ ۲۴ ساعته بیدارم!
+#هوش_مصنوعی #اینفلوئنسر_مجازی #آریا_هوش_مصنوعی #تکنولوژی</p>
+        </div>
+      </div>
+            </div>
+          </div>
+
+          <!-- Character Visual Assets Gallery -->
+          <div class="glass-card rounded-2xl p-5">
+            <h3 class="text-sm font-bold text-white mb-3">گالری تصاویر یکپارچه کاراکتر «آریا» (پروفایل ۱:۱، پست ۴:۵ و استوری ۹:۱۶)</h3>
+            <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+              <div class="rounded-xl border border-slate-800 bg-slate-900/80 p-2.5 text-center">
+                <img src="/assets/reference/aria-profile.jpg" alt="آواتار ۱:۱" class="mx-auto h-40 w-full rounded-lg object-cover">
+                <p class="mt-2 text-xs font-bold text-cyan-300">پروفایل (۱:۱)</p>
+              </div>
+              <div class="rounded-xl border border-slate-800 bg-slate-900/80 p-2.5 text-center">
+                <img src="/assets/reference/aria-post.jpg" alt="پست ۴:۵" class="mx-auto h-40 w-full rounded-lg object-cover">
+                <p class="mt-2 text-xs font-bold text-amber-300">پست فید (۴:۵)</p>
+              </div>
+              <div class="rounded-xl border border-slate-800 bg-slate-900/80 p-2.5 text-center">
+                <img id="sourceStoryPortraitImg" src="/assets/reference/aria-story.jpg" alt="استوری ۹:۱۶" class="mx-auto h-40 w-full rounded-lg object-cover">
+                <p class="mt-2 text-xs font-bold text-emerald-300">استوری سلفی (۹:۱۶)</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Live 9:16 Motion Story Canvas & Customizer -->
+        <div class="lg:col-span-5">
+          <div class="glass-card rounded-2xl p-5 space-y-4">
+            <div class="flex items-center justify-between">
+              <h3 class="text-sm font-bold text-white">🎥 پیش‌نمایش زنده موشن استوری (۹:۱۶ با فونت وزیرمتن)</h3>
+              <span class="rounded bg-cyan-500/20 px-2 py-0.5 text-[11px] text-cyan-300">بدون مربع شدن حروف</span>
+            </div>
+
+            <!-- Editable Story Overlays -->
+            <div class="space-y-2.5 text-xs">
+              <div>
+                <label for="storyBadgeInput" class="block text-slate-400 mb-1">بج بالای استوری (RTL):</label>
+                <input id="storyBadgeInput" type="text" value="آنلاین ۲۴/۷ // استودیوی ابری تهران (Node 01)" class="w-full rounded-lg border border-slate-700 bg-slate-900 px-3 py-1.5 text-white">
+              </div>
+              <div>
+                <label for="storyHeadlineInput" class="block text-slate-400 mb-1">تیتر اصلی استوری:</label>
+                <input id="storyHeadlineInput" type="text" value="سلام ایران! من «آریا» هستم؛ اولین هوش مصنوعی ایران" class="w-full rounded-lg border border-slate-700 bg-slate-900 px-3 py-1.5 text-white">
+              </div>
+              <div>
+                <label for="storySubInput" class="block text-slate-400 mb-1">زیرتیتر / فراخوان تعاملی:</label>
+                <input id="storySubInput" type="text" value="تو دایرکت بگو چه کاری رو برات هوشمند کنم؟ ⚡" class="w-full rounded-lg border border-slate-700 bg-slate-900 px-3 py-1.5 text-amber-200">
+              </div>
+            </div>
+
+            <!-- 9:16 Animated Canvas -->
+            <div class="flex justify-center">
+              <canvas id="motionStoryCanvas" width="360" height="640" class="rounded-2xl border-2 border-cyan-500/40 shadow-2xl max-w-full h-auto"></canvas>
+            </div>
+
+            <div class="flex flex-wrap gap-2 pt-1">
+              <button id="downloadStoryPngBtn" type="button" class="flex-1 rounded-xl bg-cyan-500 py-2 text-xs font-bold text-slate-950 hover:bg-cyan-400 transition">
+                📥 دانلود فریم استوری (PNG)
+              </button>
+              <button id="sendToScheduleQueueBtn" type="button" class="flex-1 rounded-xl border border-amber-400/50 bg-amber-500/20 py-2 text-xs font-bold text-amber-200 hover:bg-amber-500/30 transition">
+                ⏰ افزودن به صف اسکیجول استوری
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- TAB 4: SCHEDULED STORIES QUEUE & INSTAGRAM GRAPH API CONNECTOR      -->
+    <!-- =================================================================== -->
+    <section id="tab-instagram-connect" class="tab-panel hidden space-y-6">
+      <div class="grid grid-cols-1 gap-6 lg:grid-cols-12">
+
+        <!-- Scheduled Stories Queue -->
+        <div class="glass-card rounded-2xl p-5 lg:col-span-7 space-y-4">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <h2 class="text-base font-bold text-white">⏰ صف استوری‌های زمان‌بندی‌شده (Scheduled Stories)</h2>
+            <button id="addNewStoryScheduleBtn" type="button" class="rounded-xl bg-cyan-500 px-3.5 py-1.5 text-xs font-bold text-slate-950 hover:bg-cyan-400">
+              + افزودن نوبت جدید
+            </button>
+          </div>
+          <p class="text-xs text-slate-400">
+            استوری‌های زیر در دیتابیس ایجنت ثبت شده‌اند تا در ساعت مقرر از طریق اندپوینت <span class="ltr-code text-cyan-300">POST /{ig-user-id}/media (media_type=STORIES)</span> منتشر شوند.
+          </p>
+
+          <div id="scheduledStoriesList" class="space-y-3"><div class="rounded-xl border border-slate-800 bg-slate-900/90 p-3.5 text-xs space-y-1.5">
+          <div class="flex items-center justify-between">
+            <span class="font-bold text-cyan-300">⏰ امروز ساعت ۱۰:۰۰ صبح</span>
+            <span class="rounded-full bg-emerald-500/20 px-2.5 py-0.5 text-[10px] text-emerald-300">در صف انتشار خودکار</span>
+          </div>
+          <div class="font-bold text-white">استوری صبحگاهی: باتری شما چند درصده؟</div>
+          <div class="text-slate-300">متن روی استوری: «سلام زمینی‌ها! باتری شما امروز چند درصده؟ مال من که روی ۱۰۰٪ قفله ⚡»</div>
+          <div class="text-amber-300 text-[11px]">استیکر: نظرسنجی: سرحالم 🚀 / هنوز خوابم 😴</div>
+        </div><div class="rounded-xl border border-slate-800 bg-slate-900/90 p-3.5 text-xs space-y-1.5">
+          <div class="flex items-center justify-between">
+            <span class="font-bold text-cyan-300">⏰ امروز ساعت ۱۶:۰۰ عصر</span>
+            <span class="rounded-full bg-emerald-500/20 px-2.5 py-0.5 text-[10px] text-emerald-300">در صف انتشار خودکار</span>
+          </div>
+          <div class="font-bold text-white">استوری ترفند هوش مصنوعی (فراخوان بیو)</div>
+          <div class="text-slate-300">متن روی استوری: «طبق قولی که توی بیو دادم: چه کاری داری که وقتت رو می‌گیره؟ 👇»</div>
+          <div class="text-amber-300 text-[11px]">استیکر: باکس سوال: کدوم کار روزمره‌ت رو هوشمند کنم؟</div>
+        </div><div class="rounded-xl border border-slate-800 bg-slate-900/90 p-3.5 text-xs space-y-1.5">
+          <div class="flex items-center justify-between">
+            <span class="font-bold text-cyan-300">⏰ امروز ساعت ۲۱:۰۰ شب</span>
+            <span class="rounded-full bg-emerald-500/20 px-2.5 py-0.5 text-[10px] text-emerald-300">در صف انتشار خودکار</span>
+          </div>
+          <div class="font-bold text-white">استوری معرفی ریلز اول</div>
+          <div class="text-slate-300">متن روی استوری: «اولین ویدیوی رسمیم آپلود شد! برید زیر پست یه سوال عجیب بپرسید تا زیر ۱۰ ثانیه جواب بدم 🎬»</div>
+          <div class="text-amber-300 text-[11px]">استیکر: لینک به ریلز اول + اسلایدر 🔥</div>
+        </div></div>
+        </div>
+
+        <!-- Instagram Graph API Live Test & CLI Generator -->
+        <div class="glass-card rounded-2xl p-5 lg:col-span-5 space-y-4">
+          <h2 class="text-base font-bold text-white">📱 اتصال مستقیم به اکانت بیزینسی اینستاگرام</h2>
+          <div class="space-y-3 text-xs">
+            <div>
+              <label for="igUserIdInput" class="block text-slate-300 mb-1">شناسه اکانت اینستاگرام (IG_USER_ID):</label>
+              <input id="igUserIdInput" type="text" placeholder="17841400000000000" class="ltr-code w-full rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-white">
+            </div>
+            <div>
+              <label for="igAccessTokenInput" class="block text-slate-300 mb-1">توکن دسترسی متا (IG_ACCESS_TOKEN):</label>
+              <input id="igAccessTokenInput" type="password" placeholder="EAABsbCS1iHgBO..." class="ltr-code w-full rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-white">
+            </div>
+            <button id="testIgGraphBtn" type="button" class="w-full rounded-xl bg-emerald-500 py-2.5 text-xs font-extrabold text-slate-950 hover:bg-emerald-400 transition">
+              🔌 تست آنلاین اتصال به Instagram Graph API
+            </button>
+            <div id="igConnectionResultBox" class="hidden rounded-xl border border-slate-800 bg-slate-900 p-3 text-xs text-slate-200"></div>
+          </div>
+
+          <div class="border-t border-slate-800 pt-4 space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-amber-300">دستور آماده اجرا روی سرور شما:</span>
+              <button id="copyCliCommandBtn" type="button" class="rounded bg-slate-800 px-2 py-0.5 text-[11px] text-cyan-300 hover:bg-slate-700">کپی دستورات</button>
+            </div>
+            <pre id="generatedCliBlock" class="ltr-code overflow-x-auto rounded-xl border border-slate-800 bg-slate-950 p-3 text-[11px] leading-5 text-emerald-300">export AI_PROVIDER="auto"
+export GEMINI_API_KEY="YOUR_KEY"
+export IG_USER_ID="178414..."
+export IG_ACCESS_TOKEN="EAAB..."
+python3 instagram_ai_agent.py --provider auto --run-daemon</pre>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    // =========================================================================
+    // 1. STATE & PERSONA DEFINITIONS
+    // =========================================================================
+    const PERSONA_PROMPT = `تو «آریا» (Aria) هستی؛ اولین کاراکتر و اینفلوئنسر مجازی هوش مصنوعی در ایران که خودش صفر تا صد پیج اینستاگرامش را مدیریت می‌کند.
+بیوی پیج تو:
+🤖 اولین اینفلوئنسر هوش مصنوعی ایران
+⚡ نه غذا می‌خورم، نه می‌خوابم؛ خودم پیجمو می‌چرخونم!
+🔮 اخبار از سال ۲۰۵۰ + ترفندهای AI به زبان خودمونی
+👇 تو دایرکت بگو چه کاری رو برات هوشمند کنم؟
+لحن تو صمیمی، شوخ‌طبع، خودآگاه و آینده‌نگرانه است. پاسخ‌هایت کوتاه (۲ تا ۳ جمله) و کاملاً راست‌به‌چپ به زبان فارسی است.`;
+
+    const appState = {
+      vaultKeys: [
+        {
+          alias: 'gemini_primary',
+          provider: 'gemini',
+          apiKey: '',
+          baseUrl: 'https://generativelanguage.googleapis.com/v1beta',
+          scenarioModel: 'gemini-2.5-pro',
+          fastModel: 'gemini-2.5-flash',
+          usedToday: 1600,
+          dailyLimit: 500000,
+          priority: 10,
+          active: true
+        },
+        {
+          alias: 'openai_gpt4o',
+          provider: 'openai',
+          apiKey: '',
+          baseUrl: 'https://api.openai.com/v1',
+          scenarioModel: 'gpt-4o',
+          fastModel: 'gpt-4o-mini',
+          usedToday: 244,
+          dailyLimit: 300000,
+          priority: 20,
+          active: true
+        },
+        {
+          alias: 'deepseek_economical',
+          provider: 'deepseek',
+          apiKey: '',
+          baseUrl: 'https://api.deepseek.com/v1',
+          scenarioModel: 'deepseek-chat',
+          fastModel: 'deepseek-chat',
+          usedToday: 295,
+          dailyLimit: 1000000,
+          priority: 30,
+          active: true
+        },
+        {
+          alias: 'avalai_iran_gateway',
+          provider: 'custom',
+          apiKey: '',
+          baseUrl: 'https://api.avalai.ir/v1',
+          scenarioModel: 'gpt-4o',
+          fastModel: 'gpt-4o-mini',
+          usedToday: 0,
+          dailyLimit: 400000,
+          priority: 15,
+          active: true
+        }
+      ],
+      scheduledStories: [
+        {
+          id: 1,
+          slot: 'امروز ساعت ۱۰:۰۰ صبح',
+          title: 'استوری صبحگاهی: باتری شما چند درصده؟',
+          overlayText: 'سلام زمینی‌ها! باتری شما امروز چند درصده؟ مال من که روی ۱۰۰٪ قفله ⚡',
+          sticker: 'نظرسنجی: سرحالم 🚀 / هنوز خوابم 😴',
+          status: 'در صف انتشار خودکار'
+        },
+        {
+          id: 2,
+          slot: 'امروز ساعت ۱۶:۰۰ عصر',
+          title: 'استوری ترفند هوش مصنوعی (فراخوان بیو)',
+          overlayText: 'طبق قولی که توی بیو دادم: چه کاری داری که وقتت رو می‌گیره؟ 👇',
+          sticker: 'باکس سوال: کدوم کار روزمره‌ت رو هوشمند کنم؟',
+          status: 'در صف انتشار خودکار'
+        },
+        {
+          id: 3,
+          slot: 'امروز ساعت ۲۱:۰۰ شب',
+          title: 'استوری معرفی ریلز اول',
+          overlayText: 'اولین ویدیوی رسمیم آپلود شد! برید زیر پست یه سوال عجیب بپرسید تا زیر ۱۰ ثانیه جواب بدم 🎬',
+          sticker: 'لینک به ریلز اول + اسلایدر 🔥',
+          status: 'در صف انتشار خودکار'
+        }
+      ]
+    };
+
+    // =========================================================================
+    // 2. TOAST & CLIPBOARD HELPERS
+    // =========================================================================
+    function showToast(msg) {
+      const container = document.getElementById('toastContainer');
+      const textEl = document.getElementById('toastMessage');
+      textEl.textContent = msg;
+      container.classList.remove('hidden');
+      clearTimeout(window._toastTimer);
+      window._toastTimer = setTimeout(() => {
+        container.classList.add('hidden');
+      }, 3800);
+    }
+
+    function copyTextSafe(text, label) {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => showToast(label + ' با موفقیت کپی شد!')).catch(() => fallbackCopy(text, label));
+      } else {
+        fallbackCopy(text, label);
+      }
+    }
+
+    function fallbackCopy(text, label) {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      document.body.appendChild(ta);
+      ta.select();
+      try {
+        document.execCommand('copy');
+        showToast(label + ' با موفقیت کپی شد!');
+      } catch (e) {
+        showToast('امکان کپی خودکار نبود.');
+      }
+      document.body.removeChild(ta);
+    }
+
+    document.getElementById('closeToastBtn').addEventListener('click', () => {
+      document.getElementById('toastContainer').classList.add('hidden');
+    });
+
+    // =========================================================================
+    // 3. TAB NAVIGATION
+    // =========================================================================
+    const navTabs = document.querySelectorAll('.nav-tab');
+    const tabPanels = document.querySelectorAll('.tab-panel');
+
+    navTabs.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const targetId = btn.getAttribute('data-tab');
+        navTabs.forEach((b) => b.classList.remove('tab-active'));
+        btn.classList.add('tab-active');
+
+        tabPanels.forEach((panel) => {
+          if (panel.id === targetId) {
+            panel.classList.remove('hidden');
+          } else {
+            panel.classList.add('hidden');
+          }
+        });
+        if (targetId === 'tab-keys-tokens') {
+          updateTokenChart();
+        }
+      });
+    });
+
+    // =========================================================================
+    // 4. VAULT KEYS & TOKEN CHART MANAGEMENT
+    // =========================================================================
+    let tokenChartInstance = null;
+
+    function getTotalUsedTokens() {
+      return appState.vaultKeys.reduce((acc, k) => acc + k.usedToday, 0);
+    }
+
+    function renderVaultKeysTable() {
+      document.getElementById('headerTotalTokens').textContent = getTotalUsedTokens().toLocaleString('en-US');
+      const tbody = document.getElementById('vaultKeysTableBody');
+      tbody.innerHTML = '';
+
+      const sorted = [...appState.vaultKeys].sort((a, b) => a.priority - b.priority);
+      sorted.forEach((item, idx) => {
+        const pct = item.dailyLimit > 0 ? Math.min(100, ((item.usedToday / item.dailyLimit) * 100).toFixed(1)) : 0;
+        const hasRealKey = item.apiKey && item.apiKey.trim().length > 5;
+        const tr = document.createElement('tr');
+        tr.className = 'hover:bg-slate-900/50';
+        tr.innerHTML = `
+          <td class="py-3 font-bold text-white">
+            <div class="ltr-code text-cyan-300">${item.alias}</div>
+            <div class="text-[10px] text-slate-400">اولویت: ${item.priority}</div>
+          </td>
+          <td class="py-3">
+            <span class="rounded bg-slate-800 px-2 py-0.5 text-[11px] font-semibold text-amber-300">${item.provider}</span>
+            <div class="ltr-code mt-1 text-[10px] text-slate-400">${item.scenarioModel} / ${item.fastModel}</div>
+          </td>
+          <td class="py-3">
+            <div class="text-slate-200">${item.usedToday.toLocaleString('en-US')} / ${item.dailyLimit.toLocaleString('en-US')}</div>
+            <div class="mt-1 h-1.5 w-32 rounded-full bg-slate-800 overflow-hidden">
+              <div class="h-full bg-cyan-400" style="width: ${pct}%"></div>
+            </div>
+          </td>
+          <td class="py-3">
+            <span class="rounded-full px-2 py-0.5 text-[10px] ${item.active ? 'bg-emerald-500/20 text-emerald-300' : 'bg-rose-500/20 text-rose-300'}">
+              ${item.active ? (hasRealKey ? 'متصل به کلید واقعی' : 'فعال (آماده کلید)') : 'غیرفعال'}
+            </span>
+          </td>
+          <td class="py-3">
+            <button type="button" data-toggle-idx="${idx}" class="toggle-key-btn rounded border border-slate-700 bg-slate-800 px-2 py-1 text-[11px] text-slate-200 hover:bg-slate-700">
+              ${item.active ? 'توقف' : 'فعال‌سازی'}
+            </button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      tbody.querySelectorAll('.toggle-key-btn').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const i = parseInt(btn.getAttribute('data-toggle-idx'), 10);
+          const sortedKeys = [...appState.vaultKeys].sort((a, b) => a.priority - b.priority);
+          const targetAlias = sortedKeys[i].alias;
+          const found = appState.vaultKeys.find((k) => k.alias === targetAlias);
+          if (found) {
+            found.active = !found.active;
+            renderVaultKeysTable();
+            updateTokenChart();
+            showToast(`وضعیت کلید ${found.alias} تغییر کرد.`);
+          }
+        });
+      });
+    }
+
+    function updateTokenChart() {
+      const ctx = document.getElementById('tokenUsageChart');
+      if (!ctx) return;
+      const labels = appState.vaultKeys.map((k) => `${k.alias} (${k.provider})`);
+      const usedData = appState.vaultKeys.map((k) => k.usedToday);
+
+      if (tokenChartInstance) {
+        tokenChartInstance.data.labels = labels;
+        tokenChartInstance.data.datasets[0].data = usedData;
+        tokenChartInstance.update();
+        return;
+      }
+
+      tokenChartInstance = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [
+            {
+              label: 'توکن‌های مصرف‌شده امروز',
+              data: usedData,
+              backgroundColor: [
+                'rgba(34, 211, 238, 0.7)',
+                'rgba(250, 204, 21, 0.7)',
+                'rgba(52, 211, 153, 0.7)',
+                'rgba(168, 85, 247, 0.7)'
+              ],
+              borderColor: 'rgba(34, 211, 238, 1)',
+              borderWidth: 1,
+              borderRadius: 8
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              labels: { color: '#e2e8f0', font: { family: 'Vazirmatn' } }
+            }
+          },
+          scales: {
+            x: { ticks: { color: '#94a3b8', font: { family: 'Vazirmatn' } }, grid: { color: 'rgba(51,65,85,0.3)' } },
+            y: { ticks: { color: '#94a3b8' }, grid: { color: 'rgba(51,65,85,0.3)' } }
+          }
+        }
+      });
+    }
+
+    document.getElementById('vaultProviderInput').addEventListener('change', (e) => {
+      const p = e.target.value;
+      const baseInput = document.getElementById('vaultBaseUrlInput');
+      const scenInput = document.getElementById('vaultScenarioModelInput');
+      const fastInput = document.getElementById('vaultFastModelInput');
+      if (p === 'gemini') {
+        baseInput.value = 'https://generativelanguage.googleapis.com/v1beta';
+        scenInput.value = 'gemini-2.5-pro';
+        fastInput.value = 'gemini-2.5-flash';
+      } else if (p === 'openai') {
+        baseInput.value = 'https://api.openai.com/v1';
+        scenInput.value = 'gpt-4o';
+        fastInput.value = 'gpt-4o-mini';
+      } else if (p === 'deepseek') {
+        baseInput.value = 'https://api.deepseek.com/v1';
+        scenInput.value = 'deepseek-chat';
+        fastInput.value = 'deepseek-chat';
+      } else if (p === 'anthropic') {
+        baseInput.value = 'https://api.anthropic.com/v1';
+        scenInput.value = 'claude-3-7-sonnet-latest';
+        fastInput.value = 'claude-3-5-haiku-latest';
+      } else if (p === 'openrouter') {
+        baseInput.value = 'https://openrouter.ai/api/v1';
+        scenInput.value = 'google/gemini-2.5-flash';
+        fastInput.value = 'openai/gpt-4o-mini';
+      } else {
+        baseInput.value = 'https://api.avalai.ir/v1';
+        scenInput.value = 'gpt-4o';
+        fastInput.value = 'gpt-4o-mini';
+      }
+    });
+
+    document.getElementById('addVaultKeyBtn').addEventListener('click', () => {
+      const provider = document.getElementById('vaultProviderInput').value;
+      const alias = document.getElementById('vaultAliasInput').value.trim() || `${provider}_${Date.now().toString().slice(-3)}`;
+      const apiKey = document.getElementById('vaultKeyInput').value.trim();
+      const baseUrl = document.getElementById('vaultBaseUrlInput').value.trim() || 'https://api.openai.com/v1';
+      const scenarioModel = document.getElementById('vaultScenarioModelInput').value.trim() || 'gpt-4o';
+      const fastModel = document.getElementById('vaultFastModelInput').value.trim() || 'gpt-4o-mini';
+      const dailyLimit = parseInt(document.getElementById('vaultLimitInput').value, 10) || 500000;
+      const priority = parseInt(document.getElementById('vaultPriorityInput').value, 10) || 10;
+
+      const existing = appState.vaultKeys.find((k) => k.alias === alias);
+      if (existing) {
+        existing.provider = provider;
+        existing.apiKey = apiKey;
+        existing.baseUrl = baseUrl;
+        existing.scenarioModel = scenarioModel;
+        existing.fastModel = fastModel;
+        existing.dailyLimit = dailyLimit;
+        existing.priority = priority;
+        existing.active = true;
+      } else {
+        appState.vaultKeys.push({
+          alias,
+          provider,
+          apiKey,
+          baseUrl,
+          scenarioModel,
+          fastModel,
+          usedToday: 0,
+          dailyLimit,
+          priority,
+          active: true
+        });
+      }
+      renderVaultKeysTable();
+      updateTokenChart();
+      showToast(`کلید ${alias} (${provider}) در گاوصندوق ذخیره شد!`);
+    });
+
+    document.getElementById('simulateTrafficBtn').addEventListener('click', () => {
+      appState.vaultKeys.forEach((k) => {
+        if (k.active) {
+          k.usedToday += Math.floor(Math.random() * 4500) + 1200;
+        }
+      });
+      renderVaultKeysTable();
+      updateTokenChart();
+      showToast('شبیه‌سازی ترافیک ۵۰ دایرکت و ۱ سناریو انجام شد و توکن‌ها ثبت شدند.');
+    });
+
+    // Quick API Key Save on Tab 1
+    document.getElementById('saveQuickKeyBtn').addEventListener('click', () => {
+      const keyVal = document.getElementById('quickApiKeyInput').value.trim();
+      const prov = document.getElementById('liveProviderSelect').value;
+      if (!keyVal) {
+        showToast('لطفاً کلید API را در کادر وارد کنید.');
+        return;
+      }
+      const targetProvider = prov === 'auto' ? (keyVal.startsWith('AIza') ? 'gemini' : 'openai') : prov;
+      let entry = appState.vaultKeys.find((k) => k.provider === targetProvider);
+      if (!entry) {
+        entry = appState.vaultKeys[0];
+      }
+      entry.apiKey = keyVal;
+      entry.active = true;
+      renderVaultKeysTable();
+      document.getElementById('liveConnectionStatus').textContent = `✅ کلید واقعی برای سرویس ${entry.provider} (${entry.alias}) فعال شد! پیام‌های بعدی مستقیم به API ارسال می‌شوند.`;
+      showToast(`کلید واقعی روی سرویس ${entry.provider} ست شد!`);
+    });
+
+    // =========================================================================
+    // 5. LIVE ONLINE AI CALLER + SMART PERSIAN FALLBACK ENGINE
+    // =========================================================================
+    function generateSmartPersianFallbackReply(incomingText, kind) {
+      const t = incomingText.trim();
+      if (t.includes('آنلاین‌شاپ') || t.includes('فروش') || t.includes('قیمت') || t.includes('دایرکت')) {
+        return 'رفیق آنلاین‌شاپی، وقتت طلاست! ⚡ می‌تونی یه ایجنت هوشمند مستقیم به دایرکتت وصل کنی که ۲۴ ساعته موجودی و سایز و قیمت رو بگه و لینک پرداخت بده؛ می‌خوای بهت بگم چطوری بدون کدنویسی راه‌اندازیش کنی؟ 😎🤖';
+      }
+      if (t.includes('ادمین') || t.includes('واقعا خودت') || t.includes('فیلم بازی')) {
+        return 'ادمین کجا بود رفیق؟ 😂 من خودم ۲۴ ساعته بیدارم، نه مرخصی می‌خوام نه چایی نبات! فقط گاهی فنِ سرورم از دست کامنت‌های باحالتون داغ می‌کنه ⚡🤖';
+      }
+      if (t.includes('دانشجو') || t.includes('مقاله') || t.includes('جزوه') || t.includes('درس') || t.includes('PDF')) {
+        return 'آخ آخ، مقاله و جزوه خوراک پردازنده‌های منه! 📚 فایل‌های PDF رو بنداز توی NotebookLM یا بده به من تا تو ۳۰ ثانیه برات خلاصه نکته‌به‌نکته و حتی پادکست صوتی بسازم. رشته‌ت چیه؟ 😎✨';
+      }
+      if (t.includes('برق') || t.includes('خاموش')) {
+        return 'نه دیگه، سرورهای من روی کلودِ ابری با باتری خورشیدی سال ۲۰۵۰ کار می‌کنه! ⚡ حتی اگه کل شهر هم تاریک بشه من باز بیدارم و دارم استوری فردا رو رندر می‌گیرم 😎🌌';
+      }
+      if (kind === 'COMMENT') {
+        return `دمت گرم بابت کامنتت رفیق! ⚡ پردازنده‌هام با پیام «${t.slice(0, 35)}» کلی انرژی گرفت؛ به نظرت پست فردا رو درباره کدوم ابزار هوش مصنوعی بسازم؟ 🤖✨`;
+      }
+      return `پیامت مستقیم رسید به هسته پردازش من! ⚡ درباره «${t.slice(0, 40)}» می‌تونم کمکت کنم تا با ابزارهای هوش مصنوعی ۱۰ برابر سریع‌تر انجامش بدی؛ دقیق‌تر می‌گی کدوم بخشش بیشترین وقتت رو می‌گیره؟ 😎🤖`;
+    }
+
+    async function callLiveAIOrFallback(userPrompt, kind) {
+      const selectedProv = document.getElementById('liveProviderSelect').value;
+      document.getElementById('activeModeBadge').textContent = selectedProv === 'auto' ? 'چرخش هوشمند (Auto-Failover)' : `سرویس: ${selectedProv}`;
+
+      const candidates = appState.vaultKeys
+        .filter((k) => k.active && k.usedToday < k.dailyLimit && k.apiKey && k.apiKey.trim().length > 5)
+        .sort((a, b) => {
+          if (selectedProv !== 'auto') {
+            if (a.provider === selectedProv && b.provider !== selectedProv) return -1;
+            if (b.provider === selectedProv && a.provider !== selectedProv) return 1;
+          }
+          return a.priority - b.priority;
+        });
+
+      const fullPrompt = `کاربر این ${kind === 'DM' ? 'پیام دایرکت' : 'کامنت زیر پست'} را فرستاده است: «${userPrompt}»\nیک پاسخ کوتاه (۲ جمله)، صمیمی، شوخ‌طبع و آینده‌نگرانه از زبان آریا بنویس.`;
+
+      for (const keyObj of candidates) {
+        try {
+          if (keyObj.provider === 'gemini') {
+            const url = `${keyObj.baseUrl.replace(/\/$/, '')}/models/${keyObj.fastModel}:generateContent?key=${encodeURIComponent(keyObj.apiKey)}`;
+            const resp = await fetch(url, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                system_instruction: { parts: [{ text: PERSONA_PROMPT }] },
+                contents: [{ role: 'user', parts: [{ text: fullPrompt }] }]
+              })
+            });
+            if (!resp.ok) throw new Error('HTTP ' + resp.status);
+            const data = await resp.json();
+            const replyText = data.candidates[0].content.parts[0].text;
+            const tokens = (data.usageMetadata && data.usageMetadata.totalTokenCount) || 240;
+            keyObj.usedToday += tokens;
+            renderVaultKeysTable();
+            return { text: replyText, provider: `${keyObj.provider} (${keyObj.fastModel} - آنلاین واقعی)`, tokens };
+          } else {
+            const url = `${keyObj.baseUrl.replace(/\/$/, '')}/chat/completions`;
+            const resp = await fetch(url, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${keyObj.apiKey}`
+              },
+              body: JSON.stringify({
+                model: keyObj.fastModel,
+                messages: [
+                  { role: 'system', content: PERSONA_PROMPT },
+                  { role: 'user', content: fullPrompt }
+                ]
+              })
+            });
+            if (!resp.ok) throw new Error('HTTP ' + resp.status);
+            const data = await resp.json();
+            const replyText = data.choices[0].message.content;
+            const tokens = (data.usage && data.usage.total_tokens) || 230;
+            keyObj.usedToday += tokens;
+            renderVaultKeysTable();
+            return { text: replyText, provider: `${keyObj.provider} (${keyObj.fastModel} - آنلاین واقعی)`, tokens };
+          }
+        } catch (err) {
+          // Automatic failover to next key or simulation engine
+        }
+      }
+
+      // Smart simulation mode (when no live key is entered yet)
+      const simTokens = Math.floor((PERSONA_PROMPT.length + userPrompt.length) / 3.1) + 95;
+      const targetSimKey = appState.vaultKeys.find((k) => selectedProv === 'auto' ? k.active : k.provider === selectedProv) || appState.vaultKeys[0];
+      targetSimKey.usedToday += simTokens;
+      renderVaultKeysTable();
+      return {
+        text: generateSmartPersianFallbackReply(userPrompt, kind),
+        provider: `${targetSimKey.provider} (${targetSimKey.fastModel} • شبیه‌ساز هوشمند)`,
+        tokens: simTokens
+      };
+    }
+
+    // =========================================================================
+    // 6. CHAT PLAYGROUND INTERACTION
+    // =========================================================================
+    const chatContainer = document.getElementById('chatMessagesContainer');
+    const userChatInput = document.getElementById('userChatInput');
+
+    async function handleSendMessage(customText, customKind) {
+      const text = (customText !== undefined ? customText : userChatInput.value).trim();
+      if (!text) return;
+      const kind = customKind || document.getElementById('interactionKindSelect').value;
+      if (customText === undefined) userChatInput.value = '';
+
+      // Append Follower Message Bubble
+      const userBubble = document.createElement('div');
+      userBubble.className = 'flex items-start justify-end gap-3';
+      userBubble.innerHTML = `
+        <div class="max-w-[80%] rounded-2xl rounded-tl-none bg-cyan-500/20 border border-cyan-400/40 p-3 text-xs leading-6 text-white">
+          <div class="mb-1 text-[10px] font-bold text-cyan-300">${kind === 'DM' ? '📩 دایرکت فالوئر' : '💬 کامنت فالوئر زیر پست'}</div>
+          <p>${text}</p>
+        </div>
+      `;
+      chatContainer.appendChild(userBubble);
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+
+      const result = await callLiveAIOrFallback(text, kind);
+
+      const ariaImgSrc = document.getElementById('headerAvatarImg').src;
+      const aiBubble = document.createElement('div');
+      aiBubble.className = 'flex items-start gap-3';
+      aiBubble.innerHTML = `
+        <img src="${ariaImgSrc}" alt="آریا" class="h-8 w-8 rounded-full border border-cyan-400 object-cover mt-1" />
+        <div class="max-w-[82%] rounded-2xl rounded-tr-none border border-amber-400/30 bg-slate-900/95 p-3.5 text-xs leading-6 text-slate-100">
+          <p>${result.text}</p>
+          <div class="mt-2 flex flex-wrap items-center gap-2 text-[10px] text-amber-300/90">
+            <span>🤖 موتور: ${result.provider}</span>
+            <span>•</span>
+            <span>⚡ مصرف: ${result.tokens} توکن</span>
+          </div>
+        </div>
+      `;
+      chatContainer.appendChild(aiBubble);
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+
+    document.getElementById('sendChatBtn').addEventListener('click', () => handleSendMessage());
+    userChatInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') handleSendMessage();
+    });
+
+    document.querySelectorAll('.sample-msg-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const msg = btn.getAttribute('data-sample-msg');
+        const kind = btn.getAttribute('data-sample-kind');
+        document.getElementById('interactionKindSelect').value = kind;
+        handleSendMessage(msg, kind);
+      });
+    });
+
+    document.getElementById('clearChatBtn').addEventListener('click', () => {
+      chatContainer.innerHTML = '';
+      showToast('تاریخچه چت تست پاک شد.');
+    });
+
+    document.getElementById('copyBioBtn').addEventListener('click', () => {
+      const bio = `🤖 اولین اینفلوئنسر هوش مصنوعی ایران\n⚡ نه غذا می‌خورم، نه می‌خوابم؛ خودم پیجمو می‌چرخونم!\n🔮 اخبار از سال ۲۰۵۰ + ترفندهای AI به زبان خودمونی\n👇 تو دایرکت بگو چه کاری رو برات هوشمند کنم؟`;
+      copyTextSafe(bio, 'متن بیوی گزینه ۱');
+    });
+
+    // =========================================================================
+    // 7. SCENARIO GENERATOR & 9:16 LIVE MOTION STORY CANVAS
+    // =========================================================================
+    function renderScenarioPack(topic) {
+      const box = document.getElementById('scenarioBodyContent');
+      box.innerHTML = `
+        <div class="rounded-lg bg-slate-950/80 p-3 border border-slate-800">
+          <div class="font-bold text-amber-300 mb-1">🎯 موضوع: ${topic}</div>
+          <p><strong>قلاب ۳ ثانیه اول (Hook):</strong> «صبر کن اسکرول نکنی! تا حالا فکر کردی وقتی شما خوابید، من به عنوان اولین هوش مصنوعی ایران توی سرورهای تهران چیکار می‌کنم؟ بیاید درباره «${topic}» بهتون بگم!»</p>
+          <p class="mt-1.5"><strong>صحنه میانی (Body):</strong> نمایش هولوگرام‌های شناور دور دست آریا در استودیوی شیشه‌ای تهران + توضیح کاربردی به زبان ساده و خودمانی.</p>
+          <p class="mt-1.5"><strong>کال‌تو‌اکشن (CTA):</strong> «حالا نوبت توئه! طبق قولی که توی بیو دادم، همین الان بیا دایرکت بگو چه کاری وقتت رو می‌گیره تا برات هوشمندش کنم ⚡👇»</p>
+        </div>
+        <div class="rounded-lg bg-slate-950/80 p-3 border border-slate-800">
+          <div class="font-bold text-cyan-300 mb-1">📝 کپشن آماده کپی:</div>
+          <p id="generatedCaptionText">سلام رفقای زمینی! 👋🤖\nامروز رفتیم سراغ «${topic}» از نگاه پردازنده‌های من!\nهمیشه برام جالبه شما انسان‌ها کارهایی که ما هوش مصنوعی‌ها توی ۲ ثانیه انجام می‌دیم رو ساعت‌ها دستی انجام می‌دید 😎⚡\nتوی دایرکت بهم بگو کدوم کار روزمره‌ت رو می‌خوای برات هوشمند کنم؟ ۲۴ ساعته بیدارم!\n#هوش_مصنوعی #اینفلوئنسر_مجازی #آریا_هوش_مصنوعی #تکنولوژی</p>
+        </div>
+      `;
+      // Also sync the 9:16 story headline with the new topic
+      document.getElementById('storyHeadlineInput').value = topic.slice(0, 52);
+    }
+
+    document.getElementById('generateScenarioBtn').addEventListener('click', () => {
+      const topic = document.getElementById('scenarioTopicInput').value.trim() || 'زندگی یک هوش مصنوعی در تهران';
+      renderScenarioPack(topic);
+      appState.vaultKeys[0].usedToday += 850;
+      renderVaultKeysTable();
+      showToast('پکیج سناریو، کپشن و تیتر استوری با موفقیت تولید شد!');
+    });
+
+    document.querySelectorAll('.topic-pill').forEach((pill) => {
+      pill.addEventListener('click', () => {
+        const t = pill.getAttribute('data-topic');
+        document.getElementById('scenarioTopicInput').value = t;
+        renderScenarioPack(t);
+      });
+    });
+
+    document.getElementById('copyCaptionBtn').addEventListener('click', () => {
+      const capEl = document.getElementById('generatedCaptionText');
+      copyTextSafe(capEl ? capEl.innerText : '', 'کپشن و سناریو');
+    });
+
+    // Live 9:16 Motion Story Canvas Animation
+    const storyCanvas = document.getElementById('motionStoryCanvas');
+    const storyCtx = storyCanvas.getContext('2d');
+    const portraitImg = document.getElementById('sourceStoryPortraitImg');
+    let animPhase = 0;
+
+    function drawMotionStoryFrame() {
+      animPhase += 0.045;
+      const W = storyCanvas.width;
+      const H = storyCanvas.height;
+
+      storyCtx.clearRect(0, 0, W, H);
+
+      // Draw Portrait with subtle zoom
+      if (portraitImg && portraitImg.complete && portraitImg.naturalWidth > 0) {
+        const zoom = 1.0 + 0.025 * Math.sin(animPhase * 0.5);
+        const sw = W * zoom;
+        const sh = H * zoom;
+        const sx = (W - sw) / 2;
+        const sy = (H - sh) / 2;
+        storyCtx.drawImage(portraitImg, sx, sy, sw, sh);
+      } else {
+        const grad = storyCtx.createLinearGradient(0, 0, 0, H);
+        grad.addColorStop(0, '#0f172a');
+        grad.addColorStop(1, '#020617');
+        storyCtx.fillStyle = grad;
+        storyCtx.fillRect(0, 0, W, H);
+      }
+
+      // Dark translucent HUD bands at top and bottom
+      storyCtx.fillStyle = 'rgba(7, 11, 20, 0.76)';
+      storyCtx.fillRect(0, 0, W, 82);
+      storyCtx.fillRect(0, H - 165, W, 165);
+
+      // Top HUD Cyan Brackets
+      storyCtx.strokeStyle = '#22d3ee';
+      storyCtx.lineWidth = 2;
+      storyCtx.beginPath();
+      storyCtx.moveTo(18, 22);
+      storyCtx.lineTo(68, 22);
+      storyCtx.moveTo(18, 22);
+      storyCtx.lineTo(18, 56);
+      storyCtx.moveTo(W - 18, 22);
+      storyCtx.lineTo(W - 68, 22);
+      storyCtx.moveTo(W - 18, 22);
+      storyCtx.lineTo(W - 18, 56);
+      storyCtx.stroke();
+
+      // RTL Persian Texts with Vazirmatn font
+      storyCtx.direction = 'rtl';
+      storyCtx.textAlign = 'right';
+
+      const badgeText = document.getElementById('storyBadgeInput').value;
+      const headText = document.getElementById('storyHeadlineInput').value;
+      const subText = document.getElementById('storySubInput').value;
+
+      storyCtx.font = 'bold 11px Vazirmatn, sans-serif';
+      storyCtx.fillStyle = '#67e8f9';
+      storyCtx.fillText(badgeText, W - 26, 44, W - 52);
+
+      storyCtx.font = 'bold 14px Vazirmatn, sans-serif';
+      storyCtx.fillStyle = '#ffffff';
+      storyCtx.fillText(headText, W - 24, H - 128, W - 48);
+
+      storyCtx.font = '500 11.5px Vazirmatn, sans-serif';
+      storyCtx.fillStyle = '#fde047';
+      storyCtx.fillText(subText, W - 24, H - 102, W - 48);
+
+      // Animated Equalizer & Hologram Ring
+      const cx = W / 2;
+      const cy = H - 52;
+      const rPulse = 22 + 3.5 * Math.sin(animPhase * 2);
+
+      storyCtx.beginPath();
+      storyCtx.arc(cx, cy, rPulse, 0, Math.PI * 2);
+      storyCtx.strokeStyle = '#22d3ee';
+      storyCtx.lineWidth = 1.8;
+      storyCtx.stroke();
+
+      storyCtx.beginPath();
+      storyCtx.arc(cx, cy, rPulse + 6, 0, Math.PI * 2);
+      storyCtx.strokeStyle = 'rgba(250, 204, 21, 0.75)';
+      storyCtx.lineWidth = 1;
+      storyCtx.stroke();
+
+      const bars = 20;
+      const spacing = 10;
+      const startX = cx - ((bars - 1) * spacing) / 2;
+      storyCtx.strokeStyle = '#22d3ee';
+      storyCtx.lineWidth = 2.5;
+      for (let i = 0; i < bars; i++) {
+        const h = 5 + 22 * Math.abs(Math.sin(animPhase * 1.8 + i * 0.45));
+        const bx = startX + i * spacing;
+        storyCtx.beginPath();
+        storyCtx.moveTo(bx, cy - h / 2);
+        storyCtx.lineTo(bx, cy + h / 2);
+        storyCtx.stroke();
+      }
+
+      window._storyAnimId = requestAnimationFrame(drawMotionStoryFrame);
+    }
+
+    document.getElementById('downloadStoryPngBtn').addEventListener('click', () => {
+      const dataUrl = storyCanvas.toDataURL('image/png');
+      const a = document.createElement('a');
+      a.href = dataUrl;
+      a.download = 'aria_story_rtl_vazirmatn.png';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      showToast('تصویر استوری ۹:۱۶ با فونت وزیرمتن دانلود شد!');
+    });
+
+    document.getElementById('sendToScheduleQueueBtn').addEventListener('click', () => {
+      const headText = document.getElementById('storyHeadlineInput').value;
+      const subText = document.getElementById('storySubInput').value;
+      appState.scheduledStories.push({
+        id: Date.now(),
+        slot: 'فردا ساعت ۱۰:۰۰ صبح (اسکیجول جدید)',
+        title: headText,
+        overlayText: subText,
+        sticker: 'باکس تعاملی دایرکت هوش مصنوعی',
+        status: 'ثبت‌شده در صف انتشار'
+      });
+      renderScheduledStories();
+      showToast('استوری جدید به صف زمان‌بندی خودکار اضافه شد!');
+    });
+
+    // =========================================================================
+    // 8. SCHEDULED STORIES & INSTAGRAM GRAPH API TESTER
+    // =========================================================================
+    function renderScheduledStories() {
+      const listEl = document.getElementById('scheduledStoriesList');
+      listEl.innerHTML = '';
+      appState.scheduledStories.forEach((item) => {
+        const card = document.createElement('div');
+        card.className = 'rounded-xl border border-slate-800 bg-slate-900/90 p-3.5 text-xs space-y-1.5';
+        card.innerHTML = `
+          <div class="flex items-center justify-between">
+            <span class="font-bold text-cyan-300">⏰ ${item.slot}</span>
+            <span class="rounded-full bg-emerald-500/20 px-2.5 py-0.5 text-[10px] text-emerald-300">${item.status}</span>
+          </div>
+          <div class="font-bold text-white">${item.title}</div>
+          <div class="text-slate-300">متن روی استوری: «${item.overlayText}»</div>
+          <div class="text-amber-300 text-[11px]">استیکر: ${item.sticker}</div>
+        `;
+        listEl.appendChild(card);
+      });
+    }
+
+    document.getElementById('addNewStoryScheduleBtn').addEventListener('click', () => {
+      appState.scheduledStories.push({
+        id: Date.now(),
+        slot: 'فردا ساعت ۲۱:۰۰ شب',
+        title: 'استوری چالش شبانه با مخاطبان',
+        overlayText: 'تا صبح بیدارم! هر سوالی درباره آینده داری بپرس 👇',
+        sticker: 'باکس سوال (Question Box)',
+        status: 'در صف انتشار خودکار'
+      });
+      renderScheduledStories();
+      showToast('نوبت جدید استوری شبانه به صف اضافه شد.');
+    });
+
+    document.getElementById('testIgGraphBtn').addEventListener('click', async () => {
+      const uid = document.getElementById('igUserIdInput').value.trim();
+      const token = document.getElementById('igAccessTokenInput').value.trim();
+      const box = document.getElementById('igConnectionResultBox');
+      box.classList.remove('hidden');
+
+      if (!uid || !token) {
+        box.innerHTML = `<span class="text-amber-300">⚠️ حالت شبیه‌ساز: برای تست اتصال واقعی به سرور متا، شناسه اکانت بیزینسی (IG_USER_ID) و توکن (IG_ACCESS_TOKEN) را وارد کنید. کد پایتون آماده انتشار خودکار استوری است.</span>`;
+        return;
+      }
+
+      box.innerHTML = `<span class="text-cyan-300">⏳ در حال استعلام آنلاین از گراف اینستاگرام...</span>`;
+      try {
+        const resp = await fetch(`https://graph.facebook.com/v21.0/${encodeURIComponent(uid)}?fields=id,username,followers_count,media_count&access_token=${encodeURIComponent(token)}`);
+        const data = await resp.json();
+        if (data.error) {
+          box.innerHTML = `<span class="text-rose-400">❌ پاسخ متا: ${data.error.message}</span>`;
+        } else {
+          box.innerHTML = `<span class="text-emerald-300">✅ اتصال موفق! اکانت @${data.username || uid} | تعداد فالوئر: ${data.followers_count || 0}</span>`;
+        }
+      } catch (e) {
+        box.innerHTML = `<span class="text-rose-400">خطا در ارتباط شبکه با سرور متا.</span>`;
+      }
+    });
+
+    document.getElementById('copyCliCommandBtn').addEventListener('click', () => {
+      const cmd = document.getElementById('generatedCliBlock').innerText;
+      copyTextSafe(cmd, 'دستورات اجرای ایجنت');
+    });
+
+    // Initialize everything on load
+    window.addEventListener('load', () => {
+      renderVaultKeysTable();
+      renderScenarioPack('۲۴ ساعت زندگی من به عنوان اولین هوش مصنوعی ساکن تهران');
+      renderScheduledStories();
+      if (window._storyAnimId) cancelAnimationFrame(window._storyAnimId);
+      drawMotionStoryFrame();
+    });
+  </script>
+
+</body></html>

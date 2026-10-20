@@ -1,4 +1,6 @@
-# هسته ایجنت آریا با کتابخانه‌های استاندارد پایتون ۳ (بدون نیاز به نصب پکیج خارجی) کار می‌کند.
-# پکیج‌های زیر صرفاً برای ابزارهای جانبی یا توسعه اختیاری هستند:
+# Python 3.9+; media libraries are imported by the agent at startup.
+numpy>=1.24
+Pillow>=10.0
+opencv-python-headless>=4.8
 requests>=2.31.0
 python-dotenv>=1.0.1

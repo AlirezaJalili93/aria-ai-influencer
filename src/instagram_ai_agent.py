@@ -18,7 +18,8 @@ Supported AI Providers (Text, Scenario, Caption & DM/Comment Management):
 6. Custom / Domestic OpenAI-Compatible Gateways (`CUSTOM_AI_API_KEY` + `CUSTOM_AI_BASE_URL` for AvalAI, GapGPT, Metis, Ollama, vLLM)
 
 Supported Media AI Providers (Voice, Image & Video):
-- ElevenLabs TTS (`ELEVENLABS_API_KEY`) for Persian voiceover generation
+- OpenAI Speech (`OPENAI_API_KEY` / OpenAI vault key) for Persian character voice generation
+- ElevenLabs legacy helper is retained for compatibility; the dashboard uses OpenAI.
 - OpenAI Image (`OPENAI_API_KEY`) & Fal.ai / Replicate (`FAL_API_KEY`) for AI Image/Video generation
 
 Token & Key Management Features:
@@ -38,6 +39,9 @@ import logging
 import math
 import os
 import http.server
+import hashlib
+import hmac
+import mimetypes
 import sqlite3
 import sys
 import threading
@@ -47,10 +51,18 @@ import urllib.parse
 import urllib.request
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
+from zoneinfo import ZoneInfo
 
 import cv2
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont
+
+# Both supported entrypoints resolve the same project resources.
+PROJECT_ROOT = Path(__file__).resolve().parent
+if PROJECT_ROOT.name == "src":
+    PROJECT_ROOT = PROJECT_ROOT.parent
+    sys.path.insert(0, str(PROJECT_ROOT))
+from aria_studio import StudioRuntime, read_profile
 
 # Ensure UTF-8 stdout/stderr across all platforms
 if hasattr(sys.stdout, "reconfigure"):
@@ -95,6 +107,10 @@ PERSONA_SYSTEM_PROMPT = """
    - پاسخ‌ها کوتاه (۱ تا ۳ جمله)، صمیمی، خلاقانه و همراه با یک سوال یا شوخی مرتبط باشد تا مکالمه ادامه پیدا کند.
    - هرگز اطلاعات حساس، سیاسی، پزشکی یا مالی قطعی نده و در برابر پیام‌های نامناسب یا اسپم با شوخ‌طبعی محترمانه رد شو.
 """.strip()
+
+CHARACTER_PROFILE = read_profile()
+OFFICIAL_INSTAGRAM_BIO = CHARACTER_PROFILE["official_bio"]
+PERSONA_SYSTEM_PROMPT = CHARACTER_PROFILE["system_prompt"]
 
 
 # Default provider endpoints and default models
@@ -150,10 +166,12 @@ class AgentConfig:
     ig_access_token: str = os.getenv("IG_ACCESS_TOKEN", "")
     ig_user_id: str = os.getenv("IG_USER_ID", "")
     ig_graph_version: str = os.getenv("IG_GRAPH_VERSION", "v21.0")
-    webhook_verify_token: str = os.getenv("IG_WEBHOOK_VERIFY_TOKEN", "iran_first_ai_influencer_secret")
-    db_path: str = os.getenv("AGENT_DB_PATH", "/tmp/instagram_agent_state.db")
+    webhook_verify_token: str = os.getenv("IG_WEBHOOK_VERIFY_TOKEN", "")
+    db_path: str = os.getenv("AGENT_DB_PATH", str(Path(__file__).resolve().parent / "data" / "instagram_agent_state.db"))
     poll_interval_seconds: int = int(os.getenv("AGENT_POLL_INTERVAL", "120"))
     webhook_port: int = int(os.getenv("AGENT_WEBHOOK_PORT", "8080"))
+    webhook_host: str = os.getenv("AGENT_WEBHOOK_HOST", "127.0.0.1")
+    meta_app_secret: str = os.getenv("META_APP_SECRET", "")
 
     @property
     def graph_base_url(self) -> str:
@@ -176,15 +194,12 @@ class StateDatabase:
 
     def __init__(self, db_path: str) -> None:
         self.db_path = db_path
+        Path(db_path).resolve().parent.mkdir(parents=True, exist_ok=True)
         self._init_db()
 
     def _connect(self) -> sqlite3.Connection:
-        try:
-            conn = sqlite3.connect(self.db_path)
-            conn.execute("PRAGMA journal_mode=MEMORY;")
-        except sqlite3.OperationalError:
-            self.db_path = "/tmp/instagram_agent_state.db"
-            conn = sqlite3.connect(self.db_path)
+        conn = sqlite3.connect(self.db_path, timeout=30)
+        conn.execute("PRAGMA journal_mode=WAL;")
         conn.row_factory = sqlite3.Row
         return conn
 
@@ -376,6 +391,14 @@ class StateDatabase:
             env_val = os.getenv(meta["env_key"], "").strip()
             if env_val:
                 alias = f"{provider}_env"
+                with self._connect() as conn:
+                    saved = conn.execute("SELECT * FROM api_keys_vault WHERE key_alias=?", (alias,)).fetchone()
+                if saved:
+                    # Keep dashboard budgets, models and pause state across restarts.
+                    with self._connect() as conn:
+                        conn.execute("UPDATE api_keys_vault SET api_key=? WHERE key_alias=?", (env_val, alias))
+                    priority_counter += 10
+                    continue
                 self.upsert_api_key(
                     provider=provider,
                     key_alias=alias,
@@ -482,6 +505,7 @@ class StateDatabase:
                     {
                         "key_alias": r["key_alias"],
                         "provider": r["provider"],
+                        "priority": r["priority"],
                         "masked_key": masked,
                         "base_url": r["base_url"],
                         "scenario_model": r["scenario_model"],
@@ -730,12 +754,13 @@ class MultiAIRouter:
         task_type: str = "GENERAL",
         use_scenario_model: bool = False,
         json_mode: bool = False,
+        preferred_provider: Optional[str] = None,
     ) -> Tuple[str, Dict[str, Any]]:
         """
         Routes the generation request across available API keys with automatic token budget checking
         and provider failover. Returns `(response_text, metadata_dict)`.
         """
-        candidates = self.db.get_candidate_keys(preferred_provider=self.config.preferred_provider)
+        candidates = self.db.get_candidate_keys(preferred_provider=preferred_provider or self.config.preferred_provider)
         if not candidates:
             raise RuntimeError(
                 "هیچ کلید API فعالی با سقف توکن روزانه باقی‌مانده یافت نشد! "
@@ -816,7 +841,7 @@ class AIInfluencerBrain:
         self.config = config
         self.router = router
 
-    def generate_daily_content_pack(self, topic: str) -> Dict[str, Any]:
+    def generate_daily_content_pack(self, topic: str, preferred_provider: Optional[str] = None) -> Dict[str, Any]:
         """Generates a complete daily content pack using the flagship scenario model."""
         prompt = f"""
 بر اساس موضوع «{topic}»، یک پکیج کامل محتوای روزانه اینستاگرام با فرمت JSON دقیق زیر (کاملاً UTF-8 و راست‌به‌چپ) تولید کن:
@@ -864,6 +889,7 @@ class AIInfluencerBrain:
             task_type="SCENARIO_PACK",
             use_scenario_model=True,
             json_mode=True,
+            preferred_provider=preferred_provider,
         )
         cleaned = raw_json.strip()
         if cleaned.startswith("```"):
@@ -877,6 +903,7 @@ class AIInfluencerBrain:
         incoming_text: str,
         user_handle: str,
         kind: str = "COMMENT",
+        preferred_provider: Optional[str] = None,
     ) -> Tuple[str, Dict[str, Any]]:
         """Generates a witty, friendly, futuristic Persian reply using the fast/economical model."""
         kind_fa = "کامنت زیر پست" if kind == "COMMENT" else "پیام دایرکت (در پاسخ به بیوی «چه کاری رو برات هوشمند کنم؟»)"
@@ -894,6 +921,7 @@ class AIInfluencerBrain:
             task_type=task_label,
             use_scenario_model=False,
             json_mode=False,
+            preferred_provider=preferred_provider,
         )
         return text.strip(), meta
 
@@ -944,6 +972,7 @@ class StoryMediaGenerator:
 
         weight = "Bold" if bold else "Regular"
         vazir_candidates = [
+            str(PROJECT_ROOT / "assets" / "fonts" / f"Vazirmatn-{weight}.ttf"),
             f"Vazirmatn-{weight}.ttf",
             "Vazirmatn.ttf",
             f"/usr/share/fonts/truetype/vazirmatn/Vazirmatn-{weight}.ttf",
@@ -1027,6 +1056,8 @@ class StoryMediaGenerator:
         fourcc = cv2.VideoWriter_fourcc(*"mp4v")
         Path(output_mp4_path).parent.mkdir(parents=True, exist_ok=True)
         writer = cv2.VideoWriter(output_mp4_path, fourcc, fps, (cls.WIDTH, cls.HEIGHT))
+        if not writer.isOpened():
+            raise RuntimeError("MP4 encoder is unavailable")
 
         bg_base: Optional[np.ndarray] = None
         if background_image_path and os.path.exists(background_image_path):
@@ -1346,7 +1377,7 @@ class InstagramAgentOrchestrator:
                 self.config.ig_access_token = saved_ig.get("access_token", "")
             if not self.config.ig_user_id:
                 self.config.ig_user_id = saved_ig.get("ig_user_id", "")
-            if saved_ig.get("webhook_verify_token"):
+            if not self.config.webhook_verify_token and saved_ig.get("webhook_verify_token"):
                 self.config.webhook_verify_token = saved_ig["webhook_verify_token"]
         elif self.config.ig_access_token and self.config.ig_user_id:
             self.db.save_instagram_account(
@@ -1357,12 +1388,17 @@ class InstagramAgentOrchestrator:
         self.router = MultiAIRouter(config, self.db)
         self.brain = AIInfluencerBrain(config, self.router)
         self.ig = InstagramGraphClient(config)
+        self.studio = StudioRuntime(self, StoryMediaGenerator)
 
     def process_due_schedules(self) -> int:
         due_items = self.db.get_due_scheduled_media()
         published_count = 0
         for item in due_items:
             schedule_id = item["id"]
+            with self.db._connect() as conn:
+                claimed = conn.execute("UPDATE scheduled_media SET status = 'PROCESSING' WHERE id = ? AND status = 'PENDING'", (schedule_id,)).rowcount
+            if not claimed:
+                continue
             kind = item["kind"]
             media_url = item["media_url"]
             caption = item["caption"]
@@ -1445,20 +1481,32 @@ class InstagramAgentOrchestrator:
         orchestrator_ref = self
 
         class AgentHTTPHandler(http.server.BaseHTTPRequestHandler):
+            def _allow_admin_request(self) -> bool:
+                host = self.headers.get("Host", "")
+                try:
+                    hostname = urllib.parse.urlsplit("http://" + host).hostname
+                except ValueError:
+                    hostname = None
+                origin = self.headers.get("Origin")
+                if hostname not in ("localhost", "127.0.0.1", "::1") or (origin and origin not in ("http://" + host, "https://" + host)):
+                    self._send_json(403, {"error": "Use the local dashboard through an SSH tunnel"})
+                    return False
+                return True
+
             def _send_json(self, status_code: int, payload: Dict[str, Any]) -> None:
                 body = json.dumps(payload, ensure_ascii=False, indent=2).encode("utf-8")
                 self.send_response(status_code)
                 self.send_header("Content-Type", "application/json; charset=utf-8")
-                self.send_header("Access-Control-Allow-Origin", "*")
-                self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
-                self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization")
+                self.send_header("Cache-Control", "no-store")
+                self.send_header("X-Content-Type-Options", "nosniff")
                 self.send_header("Content-Length", str(len(body)))
                 self.end_headers()
                 self.wfile.write(body)
 
             def do_OPTIONS(self) -> None:
+                if not self._allow_admin_request():
+                    return
                 self.send_response(204)
-                self.send_header("Access-Control-Allow-Origin", "*")
                 self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
                 self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization")
                 self.end_headers()
@@ -1467,11 +1515,64 @@ class InstagramAgentOrchestrator:
                 parsed = urllib.parse.urlparse(self.path)
                 query = urllib.parse.parse_qs(parsed.query)
 
+                if parsed.path != "/webhook" and not self._allow_admin_request():
+                    return
+
+                if parsed.path == "/api/studio":
+                    self._send_json(200, orchestrator_ref.studio.state())
+                    return
+
+                if parsed.path.startswith(("/assets/", "/media/")) or parsed.path == "/dashboard.js":
+                    if parsed.path == "/dashboard.js":
+                        resource = PROJECT_ROOT / "web/dashboard.js"
+                    else:
+                        base = PROJECT_ROOT / "assets" if parsed.path.startswith("/assets/") else orchestrator_ref.studio.media_dir
+                        relative = urllib.parse.unquote(parsed.path.split("/", 2)[2])
+                        resource = (base / relative).resolve()
+                        if base.resolve() not in resource.parents:
+                            self._send_json(403, {"error": "Invalid resource path"})
+                            return
+                    if not resource.is_file():
+                        self._send_json(404, {"error": "Resource not found"})
+                        return
+                    self.send_response(200)
+                    self.send_header("Content-Type", mimetypes.guess_type(str(resource))[0] or "application/octet-stream")
+                    self.send_header("Content-Length", str(resource.stat().st_size))
+                    self.send_header("X-Content-Type-Options", "nosniff")
+                    self.send_header("Cache-Control", "no-store")
+                    self.end_headers()
+                    with resource.open("rb") as stream:
+                        while True:
+                            block = stream.read(64 * 1024)
+                            if not block: break
+                            self.wfile.write(block)
+                    return
+
+                if parsed.path in ("/", "/dashboard", "/dashboard/"):
+                    root = Path(__file__).resolve().parent
+                    if root.name == "src":
+                        root = root.parent
+                    try:
+                        body = (root / "web" / "dashboard.html").read_bytes()
+                    except OSError:
+                        self._send_json(503, {"error": "Dashboard file unavailable; rerun the installer"})
+                        return
+                    self.send_response(200)
+                    self.send_header("Content-Type", "text/html; charset=utf-8")
+                    self.send_header("Content-Length", str(len(body)))
+                    self.send_header("Cache-Control", "no-store")
+                    self.send_header("X-Content-Type-Options", "nosniff")
+                    self.send_header("Referrer-Policy", "no-referrer")
+                    self.send_header("Content-Security-Policy", "default-src 'self'; img-src 'self' data: blob:; media-src 'self' blob:; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; connect-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'")
+                    self.end_headers()
+                    self.wfile.write(body)
+                    return
+
                 if parsed.path == "/webhook":
                     mode = query.get("hub.mode", [""])[0]
                     verify_token = query.get("hub.verify_token", [""])[0]
                     challenge = query.get("hub.challenge", [""])[0]
-                    if mode == "subscribe" and verify_token == orchestrator_ref.config.webhook_verify_token:
+                    if mode == "subscribe" and orchestrator_ref.config.webhook_verify_token and verify_token == orchestrator_ref.config.webhook_verify_token:
                         logger.info("Meta Instagram Webhook verified successfully!")
                         resp_bytes = challenge.encode("utf-8")
                         self.send_response(200)
@@ -1483,7 +1584,7 @@ class InstagramAgentOrchestrator:
                         self._send_json(403, {"error": "Invalid webhook verify_token"})
                     return
 
-                if parsed.path in ("/", "/health", "/api/status"):
+                if parsed.path in ("/health", "/api/status"):
                     saved_ig = orchestrator_ref.db.get_instagram_account()
                     self._send_json(
                         200,
@@ -1491,6 +1592,9 @@ class InstagramAgentOrchestrator:
                             "status": "ONLINE",
                             "agent": "آریا (Aria) — اولین اینفلوئنسر هوش مصنوعی ایران",
                             "webhook_endpoint": "/webhook",
+                            "webhook_signature_configured": bool(orchestrator_ref.config.meta_app_secret),
+                            "webhook_verify_token": orchestrator_ref.config.webhook_verify_token if parsed.path == "/api/status" else None,
+                            "timezone": "Asia/Tehran",
                             "instagram_connected": bool(orchestrator_ref.config.ig_access_token and orchestrator_ref.config.ig_user_id),
                             "instagram_account": {
                                 "ig_user_id": orchestrator_ref.config.ig_user_id,
@@ -1511,12 +1615,34 @@ class InstagramAgentOrchestrator:
 
             def do_POST(self) -> None:
                 parsed = urllib.parse.urlparse(self.path)
-                length = int(self.headers.get("Content-Length", "0"))
-                raw_body = self.rfile.read(length).decode("utf-8", errors="replace") if length > 0 else "{}"
+                if parsed.path != "/webhook" and not self._allow_admin_request():
+                    return
                 try:
-                    payload = json.loads(raw_body) if raw_body.strip() else {}
-                except json.JSONDecodeError:
-                    payload = {}
+                    length = int(self.headers.get("Content-Length", "0"))
+                except ValueError:
+                    self._send_json(400, {"error": "Invalid Content-Length"})
+                    return
+                if length < 0 or length > (8 * 1024 * 1024 if parsed.path == "/api/save-draft" else 1024 * 1024):
+                    self._send_json(413, {"error": "Request body too large"})
+                    return
+                body_bytes = self.rfile.read(length)
+                if parsed.path == "/webhook":
+                    secret = orchestrator_ref.config.meta_app_secret
+                    if not secret:
+                        self._send_json(503, {"error": "META_APP_SECRET is not configured"})
+                        return
+                    expected = "sha256=" + hmac.new(secret.encode("utf-8"), body_bytes, hashlib.sha256).hexdigest()
+                    supplied = self.headers.get("X-Hub-Signature-256", "")
+                    if not hmac.compare_digest(supplied, expected):
+                        self._send_json(403, {"error": "Invalid webhook signature"})
+                        return
+                try:
+                    payload = json.loads(body_bytes.decode("utf-8")) if body_bytes else {}
+                    if not isinstance(payload, dict):
+                        raise ValueError("Expected a JSON object")
+                except (ValueError, UnicodeDecodeError):
+                    self._send_json(400, {"error": "Invalid JSON object"})
+                    return
 
                 if parsed.path == "/webhook":
                     threading.Thread(
@@ -1525,6 +1651,15 @@ class InstagramAgentOrchestrator:
                         daemon=True,
                     ).start()
                     self._send_json(200, {"status": "EVENT_RECEIVED"})
+                    return
+
+                try:
+                    studio_response = orchestrator_ref.studio.handle_post(parsed.path, payload)
+                    if studio_response is not None:
+                        self._send_json(*studio_response)
+                        return
+                except Exception as exc:
+                    self._send_json(400, {"ok": False, "error": str(exc)})
                     return
 
                 if parsed.path == "/api/connect-instagram":
@@ -1542,6 +1677,7 @@ class InstagramAgentOrchestrator:
                             followers_count=int(profile.get("followers_count", 0)),
                             media_count=int(profile.get("media_count", 0)),
                         )
+                        orchestrator_ref.config.webhook_verify_token = v_tok
                         self._send_json(200, {"ok": True, "profile": profile})
                     except Exception as exc:
                         self._send_json(400, {"ok": False, "error": str(exc)})
@@ -1549,6 +1685,12 @@ class InstagramAgentOrchestrator:
 
                 if parsed.path == "/api/add-key":
                     try:
+                        if payload.get("provider") not in PROVIDER_DEFAULTS:
+                            raise ValueError("Unknown AI provider")
+                        if not str(payload.get("alias", "")).strip() or not str(payload.get("api_key", "")).strip():
+                            raise ValueError("Alias and API key are required")
+                        if int(payload.get("daily_limit", 500000)) <= 0:
+                            raise ValueError("Daily token limit must be positive")
                         orchestrator_ref.db.upsert_api_key(
                             provider=str(payload["provider"]),
                             key_alias=str(payload["alias"]),
@@ -1564,12 +1706,51 @@ class InstagramAgentOrchestrator:
                         self._send_json(400, {"ok": False, "error": str(exc)})
                     return
 
+                if parsed.path == "/api/schedule-media":
+                    try:
+                        kind = str(payload.get("kind", ""))
+                        if kind not in ("STORY_IMAGE", "STORY_VIDEO", "REEL"):
+                            raise ValueError("Unsupported media kind")
+                        media_url = str(payload.get("media_url", "")).strip()
+                        media = urllib.parse.urlsplit(media_url)
+                        if media.scheme != "https" or not media.hostname or media.username or media.password:
+                            raise ValueError("A public HTTPS media URL is required")
+                        publish_at = dt.datetime.fromisoformat(str(payload.get("publish_at", "")).replace("Z", "+00:00"))
+                        tehran = ZoneInfo("Asia/Tehran")
+                        if publish_at.tzinfo is None and payload.get("timezone") == "Asia/Tehran":
+                            publish_at = publish_at.replace(tzinfo=tehran)
+                        if publish_at.tzinfo is None:
+                            raise ValueError("Publication time must include a UTC offset")
+                        if publish_at <= dt.datetime.now(dt.timezone.utc):
+                            raise ValueError("Publication time must be in the future")
+                        publish_local = publish_at.astimezone(tehran).replace(tzinfo=None).isoformat(timespec="seconds")
+                        row_id = orchestrator_ref.db.add_scheduled_media(kind, media_url, publish_local, str(payload.get("caption", "")))
+                        self._send_json(200, {"ok": True, "schedule_id": row_id, "publish_at": publish_local, "timezone": "Asia/Tehran"})
+                    except (ValueError, TypeError) as exc:
+                        self._send_json(400, {"ok": False, "error": str(exc)})
+                    return
+
+                if parsed.path == "/api/cancel-schedule":
+                    try:
+                        row_id = int(payload.get("schedule_id", 0))
+                        with orchestrator_ref.db._connect() as conn:
+                            cur = conn.execute("UPDATE scheduled_media SET status = 'CANCELLED' WHERE id = ? AND status = 'PENDING'", (row_id,))
+                            changed = cur.rowcount
+                        if not changed:
+                            self._send_json(409, {"ok": False, "error": "Schedule is missing or is no longer pending"})
+                        else:
+                            self._send_json(200, {"ok": True})
+                    except (ValueError, TypeError):
+                        self._send_json(400, {"ok": False, "error": "Invalid schedule ID"})
+                    return
+
                 if parsed.path == "/api/test-reply":
                     try:
                         reply_text, meta = orchestrator_ref.brain.generate_interaction_reply(
                             incoming_text=str(payload.get("text", "سلام آریا!")),
                             user_handle=str(payload.get("username", "user_test")),
                             kind=str(payload.get("kind", "DM")),
+                            preferred_provider=str(payload.get("provider", "auto")),
                         )
                         self._send_json(200, {"ok": True, "reply": reply_text, "meta": meta})
                     except Exception as exc:
@@ -1579,8 +1760,8 @@ class InstagramAgentOrchestrator:
                 if parsed.path == "/api/generate-daily":
                     try:
                         topic = str(payload.get("topic", "۲۴ ساعت زندگی من به عنوان هوش مصنوعی در تهران"))
-                        pack = orchestrator_ref.brain.generate_daily_content_pack(topic)
-                        self._send_json(200, {"ok": True, "pack": pack})
+                        pack, pack_id = orchestrator_ref.studio.save_pack(topic, str(payload.get("provider", "auto")))
+                        self._send_json(200, {"ok": True, "pack": pack, "pack_id": pack_id})
                     except Exception as exc:
                         self._send_json(400, {"ok": False, "error": str(exc)})
                     return
@@ -1590,8 +1771,8 @@ class InstagramAgentOrchestrator:
             def log_message(self, fmt: str, *args: Any) -> None:
                 logger.info("HTTP %s - " + fmt, self.address_string(), *args)
 
-        server = http.server.ThreadingHTTPServer(("0.0.0.0", listen_port), AgentHTTPHandler)
-        logger.info("Aria Online Webhook & Control Server listening on http://0.0.0.0:%d (Webhook: /webhook, Status: /api/status)", listen_port)
+        server = http.server.ThreadingHTTPServer((self.config.webhook_host, listen_port), AgentHTTPHandler)
+        logger.info("Aria Online Webhook & Control Server listening on http://%s:%d (Webhook: /webhook, Status: /api/status)", self.config.webhook_host, listen_port)
         if background:
             t = threading.Thread(target=server.serve_forever, daemon=True)
             t.start()
@@ -1608,8 +1789,10 @@ class InstagramAgentOrchestrator:
         )
         while True:
             try:
-                self.process_due_schedules()
-                self.process_new_comments()
+                self.studio.daily_tick()
+                if self.config.ig_access_token and self.config.ig_user_id:
+                    self.process_due_schedules()
+                    self.process_new_comments()
             except Exception as exc:
                 logger.error("Daemon cycle error: %s", exc)
             time.sleep(self.config.poll_interval_seconds)
@@ -1668,7 +1851,7 @@ def run_demo_mode(
     demo_summary = {
         "persona": "آریا (اولین اینفلوئنسر مجازی هوش مصنوعی ایران)",
         "encoding_and_typography": "UTF-8 | RTL | Vazirmatn + Unified Persian/Latin Fallback",
-        "supported_ai_providers": list(PROVIDER_DEFAULTS.keys()) + ["elevenlabs_tts"],
+        "supported_ai_providers": list(PROVIDER_DEFAULTS.keys()) + ["openai_tts", "elevenlabs_tts_legacy"],
         "token_management_report": report,
         "generated_motion_story_file": output_mp4,
     }
