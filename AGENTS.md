@@ -6,4 +6,4 @@ Use `.agents/skills/persian-rtl-vazirmatn/SKILL.md` for Persian content. Use UTF
 
 The operational dashboard is `web/dashboard.html` + `web/dashboard.js`. All credentials and live operations go through the same-origin local backend. Show simulator/template states explicitly; do not populate real usage, followers, schedules or connection status with sample numbers.
 
-Test with `python -m unittest discover -s tests -v`. The admin service binds to loopback and is opened through an SSH tunnel. Never publish port 8080 as an unauthenticated admin panel.
+Test with `python -m unittest discover -s tests -v`. The core admin service binds to loopback. Access it through an SSH tunnel or the optional password-protected HTTPS frontend on the public IP. Never publish port 8080 as an unauthenticated admin panel. The public frontend must authenticate every dashboard/API/asset/media route, validate browser origins before rewriting upstream headers, and keep the signed webhook separate.
