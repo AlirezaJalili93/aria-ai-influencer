@@ -43,7 +43,14 @@ def render_config(address, username, password_hash, upstream_port=8080, https_po
         header Origin *
         not header Origin %s
     }
-    @cross_site header Sec-Fetch-Site cross-site
+    @cross_site {
+        header Sec-Fetch-Site cross-site
+        not {
+            method GET
+            header Sec-Fetch-Mode navigate
+            header Sec-Fetch-Dest document
+        }
+    }
     handle @webhook {
         reverse_proxy 127.0.0.1:8081
     }
@@ -116,9 +123,13 @@ def check_status(config_dir, wait=0):
     deadline = time.monotonic() + wait
     while True:
         try:
-            for path, expected in [('/dashboard', 401), ('/api/status', 401), ('/dashboard.js', 401), ('/webhook', 403)]:
+            probes = [('/dashboard', 401, {}), ('/api/status', 401, {}),
+                      ('/dashboard.js', 401, {}), ('/webhook', 403, {}),
+                      ('/dashboard', 401, {'Sec-Fetch-Site': 'cross-site', 'Sec-Fetch-Mode': 'navigate', 'Sec-Fetch-Dest': 'document'}),
+                      ('/api/status', 403, {'Sec-Fetch-Site': 'cross-site', 'Sec-Fetch-Mode': 'cors', 'Sec-Fetch-Dest': 'empty'})]
+            for path, expected, headers in probes:
                 try:
-                    with opener.open(base + path, timeout=5) as response:
+                    with opener.open(urllib.request.Request(base + path, headers=headers), timeout=5) as response:
                         code = response.status
                 except urllib.error.HTTPError as exc:
                     code = exc.code
@@ -130,6 +141,7 @@ def check_status(config_dir, wait=0):
             print('Dashboard URL: ' + base + '/dashboard')
             print('Username: ' + settings['username'])
             print('HTTPS certificate verified. Dashboard/API require a password; webhook remains independent.')
+            print('External-link navigation reaches login; cross-site API requests are blocked.')
             print('Now verify login from your browser outside the VPS.')
             return
         except (OSError, RuntimeError) as exc:

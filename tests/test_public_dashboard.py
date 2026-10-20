@@ -164,6 +164,17 @@ class PublicHTTPSIntegrationTests(unittest.TestCase):
         wrong = 'Basic ' + base64.b64encode(b'aria:wrong-password').decode()
         self.assertEqual(self.request('GET', '/api/status', headers={'Authorization': wrong})[0], 401)
 
+    def test_external_link_navigation_reaches_login_and_keeps_password_required(self):
+        navigation = {'Sec-Fetch-Site': 'cross-site', 'Sec-Fetch-Mode': 'navigate', 'Sec-Fetch-Dest': 'document'}
+        self.assertEqual(self.request('GET', '/dashboard', headers=navigation)[0], 401)
+        self.assertEqual(self.request('GET', '/dashboard', authenticated=True, headers=navigation)[0], 200)
+        # CORS/fetch reads, frames and cross-site writes must not inherit this exception.
+        for method, headers in [('GET', {**navigation, 'Sec-Fetch-Mode': 'cors', 'Sec-Fetch-Dest': 'empty'}),
+                                ('GET', {**navigation, 'Sec-Fetch-Dest': 'iframe'}),
+                                ('POST', navigation)]:
+            with self.subTest(method=method, headers=headers):
+                self.assertEqual(self.request(method, '/api/status', authenticated=True, headers=headers)[0], 403)
+
     def test_public_webhook_verification_and_signature_remain_independent(self):
         self.assertEqual(self.request('GET', '/webhook')[0], 403)
         code, _, body = self.request('GET', '/webhook?hub.mode=subscribe&hub.verify_token=offline-verify&hub.challenge=777')
