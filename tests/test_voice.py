@@ -127,14 +127,74 @@ class VoiceTests(unittest.TestCase):
         self.gateway.status = 401
         self.gateway.content_type = 'application/json'
         self.gateway.audio = b'{"error":"Incorrect API key: offline-openai-key"}'
-        with self.assertRaisesRegex(RuntimeError, 'HTTP 401') as exc:
-            self.generate()
-        self.assertNotIn('offline-openai-key', str(exc.exception))
+        status, result = self.generate()
+        self.assertEqual(status, 502)
+        self.assertEqual(result['provider_status'], 401)
+        self.assertIn('HTTP 401', result['error'])
+        self.assertNotIn('offline-openai-key', json.dumps(result))
         jobs = self.app.studio.state()['jobs']
         self.assertEqual(jobs[0]['status'], 'FAILED')
         self.assertNotIn('offline-openai-key', json.dumps(jobs))
         self.assertEqual(len(self.gateway.requests), 1)
         self.assertEqual(list(self.app.studio.media_dir.iterdir()), [])
+
+    def test_429_distinguishes_credit_quota_spend_and_rate_limits_without_retry(self):
+        self.add_openai()
+        self.gateway.status, self.gateway.content_type = 429, 'application/json'
+        cases = {
+            'credit_balance_exhausted': 'پیش‌پرداخت',
+            'insufficient_quota': 'سهمیه',
+            'organization_spend_limit_exceeded': 'هزینهٔ سازمان',
+            'project_spend_limit_exceeded': 'هزینهٔ پروژه',
+            'organization_usage_limit_exceeded': 'مصرف مجاز سازمان',
+            'rate_limit_exceeded': 'بازهٔ زمانی',
+            'slow_down': 'سرعت افزایش',
+        }
+        for code, expected in cases.items():
+            with self.subTest(code=code):
+                self.gateway.audio = json.dumps({'error': {'code': code, 'type': 'insufficient_quota',
+                                                          'message': 'offline-openai-key'}}).encode()
+                status, result = self.generate()
+                self.assertEqual(status, 429)
+                self.assertEqual(result['provider_status'], 429)
+                self.assertEqual(result['provider_code'], code)
+                self.assertIn(expected, result['error'])
+                self.assertNotIn('offline-openai-key', json.dumps(result))
+        jobs = self.app.studio.state()['jobs']
+        self.assertTrue(all(j['status'] == 'FAILED' and j['result']['provider_status'] == 429 for j in jobs))
+        self.assertNotIn('offline-openai-key', json.dumps(jobs))
+        self.assertEqual(len(self.gateway.requests), len(cases))
+        self.assertEqual(list(self.app.studio.media_dir.iterdir()), [])
+
+    def test_429_falls_back_to_safe_type_without_inventing_provider_code(self):
+        self.add_openai()
+        self.gateway.status, self.gateway.content_type = 429, 'application/json'
+        for kind, expected in [('insufficient_quota', 'سهمیه'), ('rate_limit_error', 'بازهٔ زمانی')]:
+            self.gateway.audio = json.dumps({'error': {'type': kind, 'code': 'offline-openai-key'}}).encode()
+            status, result = self.generate()
+            self.assertEqual(status, 429)
+            self.assertIsNone(result['provider_code'])
+            self.assertEqual(result['provider_type'], kind)
+            self.assertIn(expected, result['error'])
+            self.assertNotIn('offline-openai-key', json.dumps(result))
+
+    def test_unrecognized_or_malformed_error_never_exposes_body_or_claims_cause(self):
+        self.add_openai()
+        self.gateway.status, self.gateway.content_type = 429, 'application/json'
+        for body in [b'not JSON: offline-openai-key', b'null', b'[]',
+                     b'{"error":"offline-openai-key"}',
+                     b'{"error":{"code":["offline-openai-key"],"type":{}}}',
+                     b'{"error":{"code":"offline-openai-key","message":"secret"}}',
+                     b' ' * 65537 + b'{"error":{"code":"insufficient_quota"}}']:
+            self.gateway.audio = body
+            status, result = self.generate()
+            self.assertEqual(status, 429)
+            self.assertIsNone(result['provider_code'])
+            self.assertIsNone(result['provider_type'])
+            self.assertIn('علت دقیق', result['error'])
+            self.assertNotIn('offline-openai-key', json.dumps(result))
+            self.assertNotIn('secret', json.dumps(result))
+        self.assertEqual(len(self.gateway.requests), 7)
 
     def test_json_or_empty_payload_cannot_be_saved_as_successful_mp3(self):
         self.add_openai()

@@ -164,6 +164,37 @@ class PublicHTTPSIntegrationTests(unittest.TestCase):
         wrong = 'Basic ' + base64.b64encode(b'aria:wrong-password').decode()
         self.assertEqual(self.request('GET', '/api/status', headers={'Authorization': wrong})[0], 401)
 
+    def test_speech_quota_error_reaches_authenticated_https_client_and_history(self):
+        from test_voice import SpeechGateway
+        speech = http.server.ThreadingHTTPServer(('127.0.0.1', 0), SpeechGateway)
+        speech.requests, speech.status, speech.content_type = [], 429, 'application/json'
+        speech.audio = b'{"error":{"code":"insufficient_quota","message":"offline-key-must-not-leak"}}'
+        worker = threading.Thread(target=speech.serve_forever, daemon=True)
+        worker.start()
+        self.addCleanup(worker.join, 5)
+        self.addCleanup(speech.server_close)
+        self.addCleanup(speech.shutdown)
+        code, _, _ = self.request('POST', '/api/add-key', {
+            'provider': 'openai', 'alias': 'speech-quota', 'api_key': 'offline-key-must-not-leak',
+            'base_url': 'http://127.0.0.1:%d/v1' % speech.server_port}, True, {'Origin': self.origin})
+        self.assertEqual(code, 200)
+        try:
+            code, _, body = self.request('POST', '/api/generate-voice', {'text': 'سلام آریا'}, True, {'Origin': self.origin})
+            self.assertEqual(code, 429)
+            result = json.loads(body)
+            self.assertFalse(result['ok'])
+            self.assertEqual(result['provider_code'], 'insufficient_quota')
+            self.assertIn('سهمیه', result['error'])
+            self.assertNotIn(b'offline-key-must-not-leak', body)
+            code, _, state = self.request('GET', '/api/studio', authenticated=True)
+            self.assertEqual(code, 200)
+            job = next(j for j in json.loads(state)['jobs'] if j['result'].get('provider_code') == 'insufficient_quota')
+            self.assertEqual(job['status'], 'FAILED')
+            self.assertNotIn(b'offline-key-must-not-leak', state)
+            self.assertEqual(len(speech.requests), 1)
+        finally:
+            self.request('POST', '/api/toggle-key', {'alias': 'speech-quota', 'active': False}, True, {'Origin': self.origin})
+
     def test_external_link_navigation_reaches_login_and_keeps_password_required(self):
         navigation = {'Sec-Fetch-Site': 'cross-site', 'Sec-Fetch-Mode': 'navigate', 'Sec-Fetch-Dest': 'document'}
         self.assertEqual(self.request('GET', '/dashboard', headers=navigation)[0], 401)

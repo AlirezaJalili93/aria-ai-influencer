@@ -26,6 +26,51 @@ TEHRAN = ZoneInfo('Asia/Tehran')
 OPENAI_VOICES = ('alloy', 'ash', 'ballad', 'coral', 'echo', 'fable', 'nova', 'onyx', 'sage', 'shimmer', 'verse', 'marin', 'cedar')
 
 
+class SpeechProviderError(RuntimeError):
+    """Only fixed, locally authored text and allowlisted codes may leave the server."""
+    def __init__(self, status, body):
+        reasons = {
+            'credit_balance_exhausted': 'اعتبار پیش‌پرداخت API تمام شده است؛ موجودی Billing حساب API را بررسی و در صورت نیاز شارژ کنید.',
+            'insufficient_quota': 'سهمیه یا اعتبار حساب API کافی نیست؛ Billing و Limits سازمان و پروژهٔ همین کلید را بررسی کنید. تکرار درخواست این مشکل را رفع نمی‌کند.',
+            'organization_spend_limit_exceeded': 'سقف هزینهٔ سازمان رسیده است؛ تنظیمات Limits سازمان را بررسی کنید.',
+            'project_spend_limit_exceeded': 'سقف هزینهٔ پروژه رسیده است؛ تنظیمات Limits پروژهٔ همین کلید را بررسی کنید.',
+            'organization_usage_limit_exceeded': 'سقف مصرف مجاز سازمان رسیده است؛ در حساب API درخواست افزایش محدودیت بدهید یا با پشتیبانی تماس بگیرید.',
+            'rate_limit_exceeded': 'تعداد درخواست‌ها یا توکن‌ها در بازهٔ زمانی از حد مجاز گذشته است؛ کمی صبر کنید و درخواست‌های هم‌زمان با همین حساب را کاهش دهید.',
+            'slow_down': 'سرعت افزایش درخواست‌ها زیاد بوده است؛ کمی صبر کنید و درخواست‌ها را با فاصله بفرستید.',
+        }
+        self.provider_status, self.provider_code, self.provider_type = status, None, None
+        try:
+            error = json.loads(body).get('error', {})
+            if isinstance(error, dict):
+                code, kind = error.get('code'), error.get('type')
+                if isinstance(code, str) and code in reasons:
+                    self.provider_code = code
+                if kind in ('insufficient_quota', 'rate_limit_error'):
+                    self.provider_type = kind
+        except (ValueError, AttributeError, TypeError, RecursionError):
+            pass
+        classification = self.provider_code or self.provider_type
+        if classification == 'rate_limit_error':
+            classification = 'rate_limit_exceeded'
+        label = self.provider_code or self.provider_type
+        prefix = 'OpenAI ساخت صدا را نپذیرفت (HTTP %s%s). ' % (
+            status, '; ' + label if label else '')
+        if status == 429:
+            reason = reasons.get(classification, 'علت دقیق 429 در پاسخ سرویس مشخص نیست؛ ممکن است اعتبار یا سقف مصرف API تمام شده باشد یا درخواست‌ها بیش از حد سریع باشند. Billing و Limits حساب API را بررسی کنید.')
+        elif status == 401:
+            reason = 'احراز هویت کلید API ناموفق بود؛ کلید فعال و دسترسی آن را در حساب API بررسی کنید.'
+        elif status == 403:
+            reason = 'دسترسی این درخواست مجاز نیست؛ مجوزهای کلید، پروژه و دسترسی سرویس را بررسی کنید.'
+        else:
+            reason = 'تنظیمات کلید، مدل صدا و دسترسی سرویس را بررسی کنید.'
+        super().__init__(prefix + reason)
+
+    def response(self):
+        return (429 if self.provider_status == 429 else 502), dict(
+            ok=False, error=str(self), provider='openai',
+            provider_status=self.provider_status, provider_code=self.provider_code, provider_type=self.provider_type)
+
+
 def read_profile():
     return json.loads((ROOT / 'character/aria.json').read_text(encoding='utf-8'))
 
@@ -166,9 +211,14 @@ class StudioRuntime:
                     content_type = response.headers.get('Content-Type', '').split(';')[0].strip().lower()
                     audio = response.read(20 * 1024 * 1024 + 1)
             except urllib.error.HTTPError as exc:
-                code = exc.code
-                exc.close()
-                raise RuntimeError('OpenAI ساخت صدا را نپذیرفت (HTTP %s). اعتبار کلید، دسترسی مدل و اعتبار مالی حساب API را بررسی کنید.' % code) from None
+                # Never echo message, headers, arbitrary codes, or a gateway's HTML.
+                try:
+                    body = exc.read(65537)
+                except OSError:
+                    body = b''
+                finally:
+                    exc.close()
+                raise SpeechProviderError(exc.code, body if len(body) <= 65536 else b'') from None
             except OSError:
                 raise RuntimeError('ارتباط با سرویس صدای OpenAI برقرار نشد. اتصال شبکه و نشانی سرویس را بررسی کنید.') from None
             except Exception:
@@ -192,7 +242,10 @@ class StudioRuntime:
             return 200, dict(ok=True, **result)
         except Exception as exc:
             destination.unlink(missing_ok=True)
-            self._job(job_id, 'FAILED', {'media_type': 'voice', 'provider': 'openai', 'error': str(exc)})
+            failure = {'media_type': 'voice', 'provider': 'openai', 'error': str(exc)}
+            if isinstance(exc, SpeechProviderError):
+                failure.update(provider_status=exc.provider_status, provider_code=exc.provider_code, provider_type=exc.provider_type)
+            self._job(job_id, 'FAILED', failure)
             raise
         finally:
             self.voice_lock.release()
@@ -236,7 +289,10 @@ class StudioRuntime:
         if path == '/api/generate-image':
             return 200, dict(ok=True,media_url=self.generate_image(str(payload.get('prompt','استودیوی ابری تهران'))[:4000]))
         if path == '/api/generate-voice':
-            return self.generate_voice(payload)
+            try:
+                return self.generate_voice(payload)
+            except SpeechProviderError as exc:
+                return exc.response()
         if path == '/api/render-motion':
             background = ROOT/'assets/reference/aria-story.jpg'
             selected = str(payload.get('background_image', ''))
