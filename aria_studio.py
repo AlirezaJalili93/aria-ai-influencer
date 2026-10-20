@@ -8,11 +8,13 @@ import base64
 import datetime as dt
 import io
 import json
+import math
 import os
 from pathlib import Path
 import shutil
 import subprocess
 import threading
+import urllib.error
 import urllib.request
 import uuid
 from zoneinfo import ZoneInfo
@@ -21,6 +23,7 @@ from PIL import Image, ImageOps
 
 ROOT = Path(__file__).resolve().parent
 TEHRAN = ZoneInfo('Asia/Tehran')
+OPENAI_VOICES = ('alloy', 'ash', 'ballad', 'coral', 'echo', 'fable', 'nova', 'onyx', 'sage', 'shimmer', 'verse', 'marin', 'cedar')
 
 
 def read_profile():
@@ -33,12 +36,16 @@ class StudioRuntime:
         self.media_dir = Path(agent.config.db_path).resolve().parent / 'media'
         self.media_dir.mkdir(parents=True, exist_ok=True)
         self.media_lock = threading.Lock()
+        self.voice_lock = threading.Lock()
         with self.db._connect() as conn:
             conn.execute('CREATE TABLE IF NOT EXISTS studio_settings (id INTEGER PRIMARY KEY CHECK(id=1), value TEXT NOT NULL)')
             conn.execute('CREATE TABLE IF NOT EXISTS content_packs (id TEXT PRIMARY KEY, created_at TEXT NOT NULL, topic TEXT NOT NULL, pack_json TEXT NOT NULL)')
             conn.execute('CREATE TABLE IF NOT EXISTS studio_drafts (id TEXT PRIMARY KEY, created_at TEXT NOT NULL, value TEXT NOT NULL)')
             conn.execute('CREATE TABLE IF NOT EXISTS studio_jobs (id TEXT PRIMARY KEY, status TEXT NOT NULL, result TEXT NOT NULL, updated_at TEXT NOT NULL)')
         self.defaults = dict(enabled=True, time='09:00', provider='auto', topic='یک موضوع تازه از زندگی آریا در تهران و یک ترفند کاربردی AI؛ ادعای خبر یا ترند تأییدنشده نکن.', generate_image=False)
+        voice = read_profile()['voice']
+        self.defaults.update(voice=os.getenv('OPENAI_TTS_VOICE', voice['voice']),
+                             voice_speed=voice['speed'], voice_instructions=voice['instructions'])
 
     def settings(self):
         with self.db._connect() as conn:
@@ -55,7 +62,8 @@ class StudioRuntime:
         for j in jobs:
             j['result'] = json.loads(j['result'])
         return dict(ok=True, character=read_profile(), settings=self.settings(), packs=packs, drafts=drafts, jobs=jobs,
-                    media_capabilities=dict(motion=True, voice_configured=bool(self.agent.config.elevenlabs_api_key), image_configured=any(k['provider'] == 'openai' for k in self.db.get_candidate_keys('openai'))),
+                    media_capabilities=dict(motion=True, voice_configured=self.has_openai_key(), image_configured=self.has_openai_key(),
+                                            voice_provider='openai', voice_model=self.voice_model(), voice_options=list(OPENAI_VOICES)),
                     reference=dict(original_video_retrieved=False, original_video='aria_motion_story_day1.mp4', original_dashboard='docs/reference/gemini-studio-dom.html'))
 
     def save_pack(self, topic, provider=None):
@@ -111,6 +119,84 @@ class StudioRuntime:
         self._job(filename[:-4], 'DONE', {'media_url':'/media/'+filename, 'media_type':'image'})
         return '/media/' + filename
 
+    def has_openai_key(self):
+        return any(k['provider'] == 'openai' for k in self.db.get_candidate_keys('openai'))
+
+    def voice_model(self):
+        return os.getenv('OPENAI_TTS_MODEL') or read_profile()['voice']['model']
+
+    def generate_voice(self, payload):
+        text = str(payload.get('text', '')).strip()
+        if not text or len(text) > 4096:
+            raise ValueError('متن صدا باید بین ۱ تا ۴۰۹۶ نویسه باشد.')
+        cfg = self.settings()
+        voice = str(payload.get('voice', cfg['voice']))
+        instructions = str(payload.get('instructions', cfg['voice_instructions'])).strip()
+        speed = payload.get('speed', cfg['voice_speed'])
+        if isinstance(speed, bool):
+            raise ValueError('سرعت صدا باید بین ۰٫۲۵ تا ۴ باشد.')
+        try:
+            speed = float(speed)
+        except (ValueError, TypeError):
+            raise ValueError('سرعت صدا باید بین ۰٫۲۵ تا ۴ باشد.') from None
+        if not math.isfinite(speed) or not 0.25 <= speed <= 4:
+            raise ValueError('سرعت صدا باید بین ۰٫۲۵ تا ۴ باشد.')
+        if voice not in OPENAI_VOICES:
+            raise ValueError('یکی از صداهای OpenAI را انتخاب کنید.')
+        if not instructions or len(instructions) > 2000:
+            raise ValueError('راهنمای لحن باید بین ۱ تا ۲۰۰۰ نویسه باشد.')
+        keys = [k for k in self.db.get_candidate_keys('openai') if k['provider'] == 'openai']
+        if not keys:
+            raise ValueError('برای ساخت صدا، یک کلید فعال OpenAI در مدیریت کلیدها ثبت کنید؛ ElevenLabs لازم نیست.')
+        key, model = keys[0], self.voice_model()
+        data = dict(model=model, voice=voice, input=text, response_format='mp3', speed=speed)
+        if model not in ('tts-1', 'tts-1-hd'):
+            data['instructions'] = instructions
+        if not self.voice_lock.acquire(blocking=False):
+            return 409, dict(ok=False, error='یک صدا در حال تولید است؛ تا پایان آن منتظر بمانید.')
+        job_id = uuid.uuid4().hex
+        destination = self.media_dir / (job_id + '.mp3')
+        try:
+            self._job(job_id, 'RUNNING', {'media_type': 'voice', 'provider': 'openai', 'model': model, 'voice': voice})
+            try:
+                req = urllib.request.Request(key['base_url'].rstrip('/') + '/audio/speech',
+                                             data=json.dumps(data, ensure_ascii=False).encode('utf-8'),
+                                             headers={'Authorization': 'Bearer ' + key['api_key'], 'Content-Type': 'application/json', 'Accept': 'audio/mpeg'}, method='POST')
+                with urllib.request.urlopen(req, timeout=90) as response:
+                    content_type = response.headers.get('Content-Type', '').split(';')[0].strip().lower()
+                    audio = response.read(20 * 1024 * 1024 + 1)
+            except urllib.error.HTTPError as exc:
+                code = exc.code
+                exc.close()
+                raise RuntimeError('OpenAI ساخت صدا را نپذیرفت (HTTP %s). اعتبار کلید، دسترسی مدل و اعتبار مالی حساب API را بررسی کنید.' % code) from None
+            except OSError:
+                raise RuntimeError('ارتباط با سرویس صدای OpenAI برقرار نشد. اتصال شبکه و نشانی سرویس را بررسی کنید.') from None
+            except Exception:
+                raise RuntimeError('درخواست ساخت صدای OpenAI انجام نشد؛ تنظیمات کلید و سرویس را بررسی کنید.') from None
+            if content_type not in ('audio/mpeg', 'audio/mp3', 'application/octet-stream') or not audio or len(audio) > 20 * 1024 * 1024:
+                raise RuntimeError('سرویس OpenAI فایل MP3 معتبر با اندازهٔ مجاز برنگرداند.')
+            if not (audio.startswith(b'ID3') or (len(audio) >= 2 and audio[0] == 255 and audio[1] & 224 == 224)):
+                raise RuntimeError('پاسخ سرویس فایل MP3 نیست؛ فایل صدا ذخیره نشد.')
+            destination.write_bytes(audio)
+            # Merge only voice preferences into the latest settings: retain concurrent daily changes.
+            with self.db._connect() as conn:
+                conn.execute('BEGIN IMMEDIATE')
+                row = conn.execute('SELECT value FROM studio_settings WHERE id=1').fetchone()
+                saved = json.loads(row[0]) if row else {}
+                saved.update(voice=voice, voice_speed=speed, voice_instructions=instructions)
+                conn.execute('INSERT OR REPLACE INTO studio_settings VALUES(1,?)', (json.dumps(saved, ensure_ascii=False),))
+            result = dict(media_url='/media/' + destination.name, media_type='voice', provider='openai', model=model,
+                          voice=voice, speed=speed, text_characters=len(text), usage_reported=False, ai_generated=True)
+            # /audio/speech returns binary MP3, not token usage. Do not invent usage/cost numbers.
+            self._job(job_id, 'DONE', result)
+            return 200, dict(ok=True, **result)
+        except Exception as exc:
+            destination.unlink(missing_ok=True)
+            self._job(job_id, 'FAILED', {'media_type': 'voice', 'provider': 'openai', 'error': str(exc)})
+            raise
+        finally:
+            self.voice_lock.release()
+
     def handle_post(self, path, payload):
         if path == '/api/studio-settings':
             cfg = self.settings()
@@ -150,12 +236,7 @@ class StudioRuntime:
         if path == '/api/generate-image':
             return 200, dict(ok=True,media_url=self.generate_image(str(payload.get('prompt','استودیوی ابری تهران'))[:4000]))
         if path == '/api/generate-voice':
-            text=str(payload.get('text','')).strip()
-            if not text or len(text)>6000: raise ValueError('متن صدا باید بین ۱ تا ۶۰۰۰ نویسه باشد.')
-            name=uuid.uuid4().hex+'.mp3'
-            self.agent.brain.generate_persian_voiceover_elevenlabs(text,str(self.media_dir/name))
-            self._job(name[:-4], 'DONE', {'media_url':'/media/'+name, 'media_type':'voice'})
-            return 200, dict(ok=True,media_url='/media/'+name)
+            return self.generate_voice(payload)
         if path == '/api/render-motion':
             background = ROOT/'assets/reference/aria-story.jpg'
             selected = str(payload.get('background_image', ''))

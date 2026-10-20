@@ -33,5 +33,13 @@
     "16:00",
     "21:00"
   ],
-  "first_reel_title": "سلام ایران! ادمین رو اخراج کردم!"
+  "first_reel_title": "سلام ایران! ادمین رو اخراج کردم!",
+  "voice": {
+    "provider": "openai",
+    "model": "gpt-4o-mini-tts",
+    "voice": "cedar",
+    "speed": 1.0,
+    "instructions": "Speak only in Persian (fa-IR), with a natural contemporary Tehran accent. You are Aria, a friendly, witty, self-aware Iranian virtual AI influencer from a futuristic Tehran studio. Use a warm, confident, conversational voice, light playful humor, clear pronunciation, natural short pauses and relaxed energy. Avoid a formal newsreader tone, exaggerated theatrical delivery or a robotic cadence. Read the supplied text faithfully without adding words, translating it or reading these instructions aloud.",
+    "disclosure_fa": "این صدای کاراکتر مجازی آریا با هوش مصنوعی تولید شده است."
+  }
 }

@@ -18,7 +18,8 @@ Supported AI Providers (Text, Scenario, Caption & DM/Comment Management):
 6. Custom / Domestic OpenAI-Compatible Gateways (`CUSTOM_AI_API_KEY` + `CUSTOM_AI_BASE_URL` for AvalAI, GapGPT, Metis, Ollama, vLLM)
 
 Supported Media AI Providers (Voice, Image & Video):
-- ElevenLabs TTS (`ELEVENLABS_API_KEY`) for Persian voiceover generation
+- OpenAI Speech (`OPENAI_API_KEY` / OpenAI vault key) for Persian character voice generation
+- ElevenLabs legacy helper is retained for compatibility; the dashboard uses OpenAI.
 - OpenAI Image (`OPENAI_API_KEY`) & Fal.ai / Replicate (`FAL_API_KEY`) for AI Image/Video generation
 
 Token & Key Management Features:
@@ -1850,7 +1851,7 @@ def run_demo_mode(
     demo_summary = {
         "persona": "آریا (اولین اینفلوئنسر مجازی هوش مصنوعی ایران)",
         "encoding_and_typography": "UTF-8 | RTL | Vazirmatn + Unified Persian/Latin Fallback",
-        "supported_ai_providers": list(PROVIDER_DEFAULTS.keys()) + ["elevenlabs_tts"],
+        "supported_ai_providers": list(PROVIDER_DEFAULTS.keys()) + ["openai_tts", "elevenlabs_tts_legacy"],
         "token_management_report": report,
         "generated_motion_story_file": output_mp4,
     }
